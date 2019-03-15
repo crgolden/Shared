@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <RootNamespace>Clarity.Shared</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <PackageId>Clarity.Shared.Claims</PackageId>
+    <PackageId>Clarity.Shared.Interfaces</PackageId>
     <Version>1.0.0</Version>
     <Company>Clarity</Company>
     <Authors>Chris Golden</Authors>
@@ -16,12 +16,14 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\Clarity.Shared.snk</AssemblyOriginatorKeyFile>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageIconUrl>https://clarity-ui.azurewebsites.net/favicon.ico</PackageIconUrl>
+    <PackageProjectUrl>https://crgolden.visualstudio.com/Clarity</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="2.2.0" />
     <PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta2-18618-05" PrivateAssets="All" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
 
 </Project>

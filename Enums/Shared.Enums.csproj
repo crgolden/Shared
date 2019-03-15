@@ -5,7 +5,7 @@
     <RootNamespace>Clarity.Shared</RootNamespace>
     <LangVersion>latest</LangVersion>
     <PackageId>Clarity.Shared.Enums</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Company>Clarity</Company>
     <Authors>Chris Golden</Authors>
     <RepositoryUrl>https://crgolden.visualstudio.com/Clarity/_git/Clarity.Shared</RepositoryUrl>
@@ -16,6 +16,9 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\Clarity.Shared.snk</AssemblyOriginatorKeyFile>
+    <PackageIconUrl>https://clarity-ui.azurewebsites.net/favicon.ico</PackageIconUrl>
+    <PackageProjectUrl>https://crgolden.visualstudio.com/Clarity</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
