@@ -10,9 +10,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Enums", "Enums\Shared.Enums.csproj", "{57E9B9CD-0CE9-46FF-AF46-4DD909218C3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared.Enums", "Enums\Shared.Enums.csproj", "{57E9B9CD-0CE9-46FF-AF46-4DD909218C3B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interfaces", "Interfaces\Shared.Interfaces.csproj", "{BE612354-211E-4E69-8BE0-721A4B07F587}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared.Interfaces", "Interfaces\Shared.Interfaces.csproj", "{BE612354-211E-4E69-8BE0-721A4B07F587}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared.Options", "Options\Shared.Options.csproj", "{B25B17E1-2038-4DD9-B199-4BDA935BB110}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,6 +30,10 @@ Global
 		{BE612354-211E-4E69-8BE0-721A4B07F587}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE612354-211E-4E69-8BE0-721A4B07F587}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE612354-211E-4E69-8BE0-721A4B07F587}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B25B17E1-2038-4DD9-B199-4BDA935BB110}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B25B17E1-2038-4DD9-B199-4BDA935BB110}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B25B17E1-2038-4DD9-B199-4BDA935BB110}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B25B17E1-2038-4DD9-B199-4BDA935BB110}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
