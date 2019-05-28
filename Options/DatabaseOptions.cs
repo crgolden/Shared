@@ -1,5 +1,8 @@
 ﻿namespace Clarity.Shared
 {
+    using System.Diagnostics.CodeAnalysis;
+
+    [ExcludeFromCodeCoverage]
     public class DatabaseOptions
     {
         public string DatabaseType { get; set; }
@@ -14,6 +17,7 @@
     /// <summary>
     /// https://docs.microsoft.com/en-us/dotnet/api/system.data.sqlclient.sqlconnectionstringbuilder
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class SqlServerOptions
     {
         public int ConnectTimeout { get; set; }
@@ -40,6 +44,7 @@
     /// <summary>
     /// https://docs.microsoft.com/en-us/dotnet/api/microsoft.data.sqlite.sqliteconnectionstringbuilder
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class SqliteOptions
     {
         public string Cache { get; set; } = "Default";

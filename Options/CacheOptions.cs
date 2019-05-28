@@ -1,7 +1,9 @@
 ﻿namespace Clarity.Shared
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
 
+    [ExcludeFromCodeCoverage]
     public class CacheOptions
     {
         public DateTimeOffset? AbsoluteExpiration { get; set; }

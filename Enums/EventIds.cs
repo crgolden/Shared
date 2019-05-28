@@ -43,6 +43,15 @@
         QueueClientStop,
         QueueClientProcessing,
         QueueClientCompleted,
-        QueueClientError
+        QueueClientError,
+        FromErpStart,
+        FromErpEnd,
+        FromErpError,
+        ToErpStart,
+        ToErpEnd,
+        ToErpError,
+        IndexStart,
+        IndexEnd,
+        IndexError
     }
 }

@@ -1,10 +1,14 @@
 ﻿namespace Clarity.Shared
 {
+    using System.Diagnostics.CodeAnalysis;
+
+    [ExcludeFromCodeCoverage]
     public class IndexOptions
     {
         public ElasticsearchOptions ElasticsearchOptions { get; set; }
     }
 
+    [ExcludeFromCodeCoverage]
     public class ElasticsearchOptions
     {
         public string AdminUsername { get; set; }
