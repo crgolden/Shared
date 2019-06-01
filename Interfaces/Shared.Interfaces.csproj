@@ -2,28 +2,27 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>Clarity.Shared</RootNamespace>
+    <RootNamespace>crgolden.Shared</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <PackageId>Clarity.Shared.Interfaces</PackageId>
+    <PackageId>crgolden.Shared.Interfaces</PackageId>
     <Version>1.0.0</Version>
-    <Company>Clarity</Company>
+    <Company>crgolden</Company>
     <Authors>Chris Golden</Authors>
-    <RepositoryUrl>https://crgolden.visualstudio.com/Clarity/_git/Clarity.Shared</RepositoryUrl>
+    <RepositoryUrl>https://github.com/crgolden/crgolden.Shared</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\Clarity.Shared.snk</AssemblyOriginatorKeyFile>
-    <PackageIconUrl>https://clarity-ui.azurewebsites.net/favicon.ico</PackageIconUrl>
-    <PackageProjectUrl>https://crgolden.visualstudio.com/Clarity</PackageProjectUrl>
+    <AssemblyOriginatorKeyFile>..\crgolden.Shared.snk</AssemblyOriginatorKeyFile>
+    <PackageIconUrl>https://crgolden-ui.azurewebsites.net/favicon.ico</PackageIconUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="2.2.0" />
-    <PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta2-18618-05" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19270-01" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>

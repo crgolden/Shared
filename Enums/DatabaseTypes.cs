@@ -1,4 +1,4 @@
-﻿namespace Clarity.Shared
+﻿namespace crgolden.Shared
 {
     public enum DatabaseTypes
     {

@@ -1,4 +1,4 @@
-﻿namespace Clarity.Shared
+﻿namespace crgolden.Shared
 {
     using System;
     using System.Threading;
