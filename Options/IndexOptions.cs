@@ -15,10 +15,6 @@
 
         public string AdminPassword { get; set; }
 
-        public string ReadUsername { get; set; }
-
-        public string ReadPassword { get; set; }
-
         public string KibanaUsername { get; set; }
 
         public string KibanaPassword { get; set; }

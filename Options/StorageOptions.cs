@@ -17,6 +17,8 @@
     {
         public string AccountName { get; set; }
 
-        public string AccountKey { get; set; }
+        public string AccountKey1 { get; set; }
+
+        public string AccountKey2 { get; set; }
     }
 }
