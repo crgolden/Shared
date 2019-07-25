@@ -5,7 +5,7 @@
     <RootNamespace>crgolden.Shared</RootNamespace>
     <LangVersion>latest</LangVersion>
     <PackageId>crgolden.Shared.Interfaces</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Company>crgolden</Company>
     <Authors>Chris Golden</Authors>
     <RepositoryUrl>https://github.com/crgolden/crgolden.Shared</RepositoryUrl>
