@@ -1,20 +1,11 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# Introduction
+High-level, zero-dependency libraries that are easily shared.
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+### Enums
+[![crgolden.Shared.Enums package in crgolden feed in Azure Artifacts](https://feeds.dev.azure.com/crgolden/8b89f437-a73a-4c97-afe4-847235279735/_apis/public/Packaging/Feeds/fc08049d-30e7-4f2e-a1f2-da1e4aef0d5d/Packages/50412c30-ef2a-411c-a673-9f8110492665/Badge)](https://dev.azure.com/crgolden/crgolden/_packaging?_a=package&feed=crgolden&package=crgolden.Shared.Enums&protocolType=NuGet)
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+### Interfaces
+[![crgolden.Shared.Interfaces package in crgolden feed in Azure Artifacts](https://feeds.dev.azure.com/crgolden/8b89f437-a73a-4c97-afe4-847235279735/_apis/public/Packaging/Feeds/fc08049d-30e7-4f2e-a1f2-da1e4aef0d5d/Packages/532385ff-bcd8-4003-aaf6-e7da5525ef69/Badge)](https://dev.azure.com/crgolden/crgolden/_packaging?_a=package&feed=crgolden&package=crgolden.Shared.Interfaces&protocolType=NuGet)
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
-
-If you want to learn more about creating good readme files then refer the following [guidelines](https://www.visualstudio.com/en-us/docs/git/create-a-readme). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+### Options
+[![crgolden.Shared.Options package in crgolden feed in Azure Artifacts](https://feeds.dev.azure.com/crgolden/8b89f437-a73a-4c97-afe4-847235279735/_apis/public/Packaging/Feeds/fc08049d-30e7-4f2e-a1f2-da1e4aef0d5d/Packages/ec11a046-0019-4c54-b566-1aa5b4433ddb/Badge)](https://dev.azure.com/crgolden/crgolden/_packaging?_a=package&feed=crgolden&package=crgolden.Shared.Options&protocolType=NuGet)

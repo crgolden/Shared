@@ -1,13 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.489
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5282231D-8635-4755-AD60-2796D7C16365}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		crgolden.Shared.snk = crgolden.Shared.snk
-		NuGet.Config = NuGet.Config
 		README.md = README.md
 	EndProjectSection
 EndProject

@@ -1,14 +1,15 @@
 ﻿namespace crgolden.Shared
 {
     using System;
+    using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
 
     public interface IStorageService
     {
-        Task<Uri> UploadFileToStorageAsync(
-            IFormFile file,
+        Task<Uri> UploadStreamToStorageAsync(
+            Stream stream,
+            string fileName,
             string containerName,
             CancellationToken token);
 
