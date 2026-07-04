@@ -6,7 +6,7 @@ using Shared.Domain;
 public sealed class ServiceScheduleTests
 {
     [Fact]
-    public void Create_AllValidInput_ReturnsServiceSchedule()
+    public void Build_AllValidInput_ReturnsServiceSchedule()
     {
         var schedule = Build();
 
@@ -15,21 +15,21 @@ public sealed class ServiceScheduleTests
     }
 
     [Fact]
-    public void Create_EmptyId_Throws()
+    public void WithId_Empty_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => Build(id: Guid.Empty));
+        var ex = Assert.Throws<ArgumentException>(() => new ServiceScheduleBuilder().WithId(Guid.Empty));
         Assert.Equal("id", ex.ParamName);
     }
 
     [Fact]
-    public void Create_EmptyChurchId_Throws()
+    public void WithChurchId_Empty_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => Build(churchId: Guid.Empty));
+        var ex = Assert.Throws<ArgumentException>(() => new ServiceScheduleBuilder().WithChurchId(Guid.Empty));
         Assert.Equal("churchId", ex.ParamName);
     }
 
     [Fact]
-    public void Create_NullCampusId_IsAllowed()
+    public void WithCampusId_Null_IsAllowed()
     {
         var schedule = Build(campusId: null);
 
@@ -37,30 +37,38 @@ public sealed class ServiceScheduleTests
     }
 
     [Fact]
-    public void Create_DayOfWeekAboveSix_Throws()
+    public void WithDayOfWeek_AboveSix_Throws()
     {
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => Build(dayOfWeek: 7));
+        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new ServiceScheduleBuilder().WithDayOfWeek(7));
         Assert.Equal("dayOfWeek", ex.ParamName);
     }
 
     [Fact]
-    public void Create_DefaultCreatedAt_Throws()
+    public void WithCreatedAt_Default_Throws()
     {
-        // Build()'s DateTime? "unset" sentinel is itself null, so default(DateTime) (a real, non-null
-        // value) can only be exercised by calling Create directly rather than through the helper.
-        var now = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        var ex = Assert.Throws<ArgumentException>(() => ServiceSchedule.Create(
-            Guid.NewGuid(), Guid.NewGuid(), null, 0, new TimeOnly(10, 30), "Sunday Worship", default, now));
+        var ex = Assert.Throws<ArgumentException>(() => new ServiceScheduleBuilder().WithCreatedAt(default));
         Assert.Equal("createdAt", ex.ParamName);
     }
 
     [Fact]
-    public void Create_DefaultUpdatedAt_Throws()
+    public void WithUpdatedAt_Default_Throws()
     {
-        var now = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        var ex = Assert.Throws<ArgumentException>(() => ServiceSchedule.Create(
-            Guid.NewGuid(), Guid.NewGuid(), null, 0, new TimeOnly(10, 30), "Sunday Worship", now, default));
+        var ex = Assert.Throws<ArgumentException>(() => new ServiceScheduleBuilder().WithUpdatedAt(default));
         Assert.Equal("updatedAt", ex.ParamName);
+    }
+
+    [Fact]
+    public void Build_RequiredFieldNeverSet_Throws()
+    {
+        var builder = new ServiceScheduleBuilder()
+            .WithId(Guid.NewGuid())
+            .WithChurchId(Guid.NewGuid())
+            .WithDayOfWeek(0)
+            .WithCreatedAt(DateTime.UtcNow)
+            .WithUpdatedAt(DateTime.UtcNow);
+
+        var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
+        Assert.Contains("WithStartTime", ex.Message, StringComparison.Ordinal);
     }
 
     private static ServiceSchedule Build(
@@ -72,14 +80,15 @@ public sealed class ServiceScheduleTests
         DateTime? updatedAt = null)
     {
         var now = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        return ServiceSchedule.Create(
-            id ?? Guid.NewGuid(),
-            churchId ?? Guid.NewGuid(),
-            campusId,
-            dayOfWeek,
-            new TimeOnly(10, 30),
-            description: "Sunday Worship",
-            createdAt ?? now,
-            updatedAt ?? now);
+        return new ServiceScheduleBuilder()
+            .WithId(id ?? Guid.NewGuid())
+            .WithChurchId(churchId ?? Guid.NewGuid())
+            .WithCampusId(campusId)
+            .WithDayOfWeek(dayOfWeek)
+            .WithStartTime(new TimeOnly(10, 30))
+            .WithDescription("Sunday Worship")
+            .WithCreatedAt(createdAt ?? now)
+            .WithUpdatedAt(updatedAt ?? now)
+            .Build();
     }
 }

@@ -6,7 +6,7 @@ using Shared.Domain;
 public sealed class ChurchAttributeTests
 {
     [Fact]
-    public void Create_AllValidInput_ReturnsChurchAttribute()
+    public void Build_AllValidInput_ReturnsChurchAttribute()
     {
         var attribute = Build();
 
@@ -15,67 +15,77 @@ public sealed class ChurchAttributeTests
     }
 
     [Fact]
-    public void Create_EmptyId_Throws()
+    public void WithId_Empty_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => Build(id: Guid.Empty));
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithId(Guid.Empty));
         Assert.Equal("id", ex.ParamName);
     }
 
     [Fact]
-    public void Create_EmptyChurchId_Throws()
+    public void WithChurchId_Empty_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => Build(churchId: Guid.Empty));
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithChurchId(Guid.Empty));
         Assert.Equal("churchId", ex.ParamName);
     }
 
     [Fact]
-    public void Create_BlankKey_Throws()
+    public void WithKey_Blank_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => Build(key: string.Empty));
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithKey(string.Empty));
         Assert.Equal("key", ex.ParamName);
     }
 
     [Fact]
-    public void Create_BlankValue_Throws()
+    public void WithValue_Blank_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => Build(value: " "));
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithValue(" "));
         Assert.Equal("value", ex.ParamName);
     }
 
     [Fact]
-    public void Create_BlankSource_Throws()
+    public void WithSource_Blank_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => Build(source: string.Empty));
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithSource(string.Empty));
         Assert.Equal("source", ex.ParamName);
     }
 
     [Theory]
     [InlineData(-0.0001)]
     [InlineData(1.0001)]
-    public void Create_ConfidenceOutOfRange_Throws(decimal confidence)
+    public void WithConfidence_OutOfRange_Throws(decimal confidence)
     {
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => Build(confidence: confidence));
+        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new ChurchAttributeBuilder().WithConfidence(confidence));
         Assert.Equal("confidence", ex.ParamName);
     }
 
     [Fact]
-    public void Create_DefaultCreatedAt_Throws()
+    public void WithCreatedAt_Default_Throws()
     {
-        // Build()'s DateTime? "unset" sentinel is itself null, so default(DateTime) (a real, non-null
-        // value) can only be exercised by calling Create directly rather than through the helper.
-        var now = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        var ex = Assert.Throws<ArgumentException>(() => ChurchAttribute.Create(
-            Guid.NewGuid(), Guid.NewGuid(), "denomination", "Baptist", "enrichment", 0.6m, default, now));
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithCreatedAt(default));
         Assert.Equal("createdAt", ex.ParamName);
     }
 
     [Fact]
-    public void Create_DefaultUpdatedAt_Throws()
+    public void WithUpdatedAt_Default_Throws()
     {
-        var now = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        var ex = Assert.Throws<ArgumentException>(() => ChurchAttribute.Create(
-            Guid.NewGuid(), Guid.NewGuid(), "denomination", "Baptist", "enrichment", 0.6m, now, default));
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithUpdatedAt(default));
         Assert.Equal("updatedAt", ex.ParamName);
+    }
+
+    [Fact]
+    public void Build_RequiredFieldNeverSet_Throws()
+    {
+        var builder = new ChurchAttributeBuilder()
+            .WithId(Guid.NewGuid())
+            .WithChurchId(Guid.NewGuid())
+            .WithKey("denomination")
+            .WithValue("Baptist")
+            .WithConfidence(0.6m)
+            .WithCreatedAt(DateTime.UtcNow)
+            .WithUpdatedAt(DateTime.UtcNow);
+
+        var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
+        Assert.Contains("WithSource", ex.Message, StringComparison.Ordinal);
     }
 
     private static ChurchAttribute Build(
@@ -89,6 +99,15 @@ public sealed class ChurchAttributeTests
         DateTime? updatedAt = null)
     {
         var now = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        return ChurchAttribute.Create(id ?? Guid.NewGuid(), churchId ?? Guid.NewGuid(), key, value, source, confidence, createdAt ?? now, updatedAt ?? now);
+        return new ChurchAttributeBuilder()
+            .WithId(id ?? Guid.NewGuid())
+            .WithChurchId(churchId ?? Guid.NewGuid())
+            .WithKey(key)
+            .WithValue(value)
+            .WithSource(source)
+            .WithConfidence(confidence)
+            .WithCreatedAt(createdAt ?? now)
+            .WithUpdatedAt(updatedAt ?? now)
+            .Build();
     }
 }

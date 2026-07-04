@@ -9,7 +9,7 @@
 
     <!-- Package Identity -->
     <PackageId>Shared</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Description>Shared utilities for `crgolden` apps.</Description>
     <Company>crgolden</Company>
     <Authors>Chris Golden</Authors>

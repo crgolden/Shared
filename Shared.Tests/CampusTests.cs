@@ -6,7 +6,7 @@ using Shared.Domain;
 public sealed class CampusTests
 {
     [Fact]
-    public void Create_AllValidInput_ReturnsCampus()
+    public void Build_AllValidInput_ReturnsCampus()
     {
         var campus = Build();
 
@@ -15,83 +15,95 @@ public sealed class CampusTests
     }
 
     [Fact]
-    public void Create_EmptyId_Throws()
+    public void WithId_Empty_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => Build(id: Guid.Empty));
+        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithId(Guid.Empty));
         Assert.Equal("id", ex.ParamName);
     }
 
     [Fact]
-    public void Create_EmptyChurchId_Throws()
+    public void WithChurchId_Empty_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => Build(churchId: Guid.Empty));
+        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithChurchId(Guid.Empty));
         Assert.Equal("churchId", ex.ParamName);
     }
 
     [Fact]
-    public void Create_BlankName_Throws()
+    public void WithName_Blank_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => Build(name: string.Empty));
+        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithName(string.Empty));
         Assert.Equal("name", ex.ParamName);
     }
 
     [Fact]
-    public void Create_NullCity_Throws()
+    public void WithCity_Null_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => Build(city: null!));
+        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithCity(null!));
         Assert.Equal("city", ex.ParamName);
     }
 
     [Fact]
-    public void Create_StateWrongLength_Throws()
+    public void WithState_WrongLength_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => Build(state: "CO-North"));
+        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithState("CO-North"));
         Assert.Equal("state", ex.ParamName);
     }
 
     [Fact]
-    public void Create_BlankZip_Throws()
+    public void WithZip_Blank_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => Build(zip: " "));
+        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithZip(" "));
         Assert.Equal("zip", ex.ParamName);
     }
 
     [Theory]
     [InlineData(-91.0)]
     [InlineData(91.0)]
-    public void Create_LatitudeOutOfRange_Throws(double latitude)
+    public void WithLatitude_OutOfRange_Throws(double latitude)
     {
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => Build(latitude: latitude));
+        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new CampusBuilder().WithLatitude(latitude));
         Assert.Equal("latitude", ex.ParamName);
     }
 
     [Theory]
     [InlineData(-181.0)]
     [InlineData(181.0)]
-    public void Create_LongitudeOutOfRange_Throws(double longitude)
+    public void WithLongitude_OutOfRange_Throws(double longitude)
     {
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => Build(longitude: longitude));
+        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new CampusBuilder().WithLongitude(longitude));
         Assert.Equal("longitude", ex.ParamName);
     }
 
     [Fact]
-    public void Create_DefaultCreatedAt_Throws()
+    public void WithCreatedAt_Default_Throws()
     {
-        // Build()'s DateTime? "unset" sentinel is itself null, so default(DateTime) (a real, non-null
-        // value) can only be exercised by calling Create directly rather than through the helper.
-        var now = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        var ex = Assert.Throws<ArgumentException>(() => Campus.Create(
-            Guid.NewGuid(), Guid.NewGuid(), "North Campus", "1 N St", "Denver", "CO", "80201", 0, 0, default, now));
+        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithCreatedAt(default));
         Assert.Equal("createdAt", ex.ParamName);
     }
 
     [Fact]
-    public void Create_DefaultUpdatedAt_Throws()
+    public void WithUpdatedAt_Default_Throws()
     {
-        var now = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        var ex = Assert.Throws<ArgumentException>(() => Campus.Create(
-            Guid.NewGuid(), Guid.NewGuid(), "North Campus", "1 N St", "Denver", "CO", "80201", 0, 0, now, default));
+        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithUpdatedAt(default));
         Assert.Equal("updatedAt", ex.ParamName);
+    }
+
+    [Fact]
+    public void Build_RequiredFieldNeverSet_Throws()
+    {
+        var builder = new CampusBuilder()
+            .WithId(Guid.NewGuid())
+            .WithChurchId(Guid.NewGuid())
+            .WithName("North Campus")
+            .WithState("CO")
+            .WithZip("80201")
+            .WithLatitude(0)
+            .WithLongitude(0)
+            .WithCreatedAt(DateTime.UtcNow)
+            .WithUpdatedAt(DateTime.UtcNow);
+
+        var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
+        Assert.Contains("WithCity", ex.Message, StringComparison.Ordinal);
     }
 
     private static Campus Build(
@@ -107,17 +119,18 @@ public sealed class CampusTests
         DateTime? updatedAt = null)
     {
         var now = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        return Campus.Create(
-            id ?? Guid.NewGuid(),
-            churchId ?? Guid.NewGuid(),
-            name,
-            street: "1 N St",
-            city,
-            state,
-            zip,
-            latitude,
-            longitude,
-            createdAt ?? now,
-            updatedAt ?? now);
+        return new CampusBuilder()
+            .WithId(id ?? Guid.NewGuid())
+            .WithChurchId(churchId ?? Guid.NewGuid())
+            .WithName(name)
+            .WithStreet("1 N St")
+            .WithCity(city)
+            .WithState(state)
+            .WithZip(zip)
+            .WithLatitude(latitude)
+            .WithLongitude(longitude)
+            .WithCreatedAt(createdAt ?? now)
+            .WithUpdatedAt(updatedAt ?? now)
+            .Build();
     }
 }

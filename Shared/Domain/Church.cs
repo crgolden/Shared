@@ -1,229 +1,65 @@
 namespace Shared.Domain;
 
 /// <summary>
-/// A church record, matching the <c>Churches</c> table schema exactly. The private constructor plus
-/// <see cref="Create"/> factory make it impossible to hold a <see cref="Church"/> instance in memory
-/// that would violate a NOT NULL/range constraint at write time — callers get an immediate,
-/// specific <see cref="ArgumentException"/> instead of a raw SQL constraint violation three layers
-/// away from the bad input.
+/// A church record, matching the <c>Churches</c> table schema exactly. The internal parameterless
+/// constructor plus <c>internal init</c> properties mean only <see cref="ChurchBuilder"/> (in this
+/// assembly) can ever populate a <see cref="Church"/> — external assemblies can't construct one via
+/// object initializer and bypass validation. Each <c>With*</c> call on the builder validates its own
+/// field immediately, and <see cref="ChurchBuilder.Build"/> refuses to construct until every required
+/// field has been set, so callers get an immediate, specific <see cref="ArgumentException"/> instead of
+/// a raw SQL constraint violation three layers away from the bad input.
 /// </summary>
 public sealed class Church
 {
-    private Church(
-        Guid id,
-        string canonicalName,
-        string slug,
-        double latitude,
-        double longitude,
-        string? street,
-        string city,
-        string state,
-        string zip,
-        string? phoneNumber,
-        string? website,
-        string? emailAddress,
-        Guid? denominationId,
-        int worshipStyle,
-        string primaryLanguage,
-        bool? acceptsLgbtq,
-        bool? wheelchairAccessible,
-        bool? hasNursery,
-        bool? hasYouthProgram,
-        decimal confidenceScore,
-        DateTime? lastVerifiedAt,
-        DateTime createdAt,
-        DateTime updatedAt,
-        bool isActive)
+    internal Church()
     {
-        Id = id;
-        CanonicalName = canonicalName;
-        Slug = slug;
-        Latitude = latitude;
-        Longitude = longitude;
-        Street = street;
-        City = city;
-        State = state;
-        Zip = zip;
-        PhoneNumber = phoneNumber;
-        Website = website;
-        EmailAddress = emailAddress;
-        DenominationId = denominationId;
-        WorshipStyle = worshipStyle;
-        PrimaryLanguage = primaryLanguage;
-        AcceptsLGBTQ = acceptsLgbtq;
-        WheelchairAccessible = wheelchairAccessible;
-        HasNursery = hasNursery;
-        HasYouthProgram = hasYouthProgram;
-        ConfidenceScore = confidenceScore;
-        LastVerifiedAt = lastVerifiedAt;
-        CreatedAt = createdAt;
-        UpdatedAt = updatedAt;
-        IsActive = isActive;
     }
 
-    public Guid Id { get; }
+    public Guid Id { get; internal init; }
 
-    public string CanonicalName { get; }
+    public string CanonicalName { get; internal init; } = string.Empty;
 
-    public string Slug { get; }
+    public string Slug { get; internal init; } = string.Empty;
 
-    public double Latitude { get; }
+    public double Latitude { get; internal init; }
 
-    public double Longitude { get; }
+    public double Longitude { get; internal init; }
 
-    public string? Street { get; }
+    public string? Street { get; internal init; }
 
-    public string City { get; }
+    public string City { get; internal init; } = string.Empty;
 
-    public string State { get; }
+    public string State { get; internal init; } = string.Empty;
 
-    public string Zip { get; }
+    public string Zip { get; internal init; } = string.Empty;
 
-    public string? PhoneNumber { get; }
+    public string? PhoneNumber { get; internal init; }
 
-    public string? Website { get; }
+    public string? Website { get; internal init; }
 
-    public string? EmailAddress { get; }
+    public string? EmailAddress { get; internal init; }
 
-    public Guid? DenominationId { get; }
+    public Guid? DenominationId { get; internal init; }
 
-    public int WorshipStyle { get; }
+    public int WorshipStyle { get; internal init; }
 
-    public string PrimaryLanguage { get; }
+    public string PrimaryLanguage { get; internal init; } = string.Empty;
 
-    public bool? AcceptsLGBTQ { get; }
+    public bool? AcceptsLGBTQ { get; internal init; }
 
-    public bool? WheelchairAccessible { get; }
+    public bool? WheelchairAccessible { get; internal init; }
 
-    public bool? HasNursery { get; }
+    public bool? HasNursery { get; internal init; }
 
-    public bool? HasYouthProgram { get; }
+    public bool? HasYouthProgram { get; internal init; }
 
-    public decimal ConfidenceScore { get; }
+    public decimal ConfidenceScore { get; internal init; }
 
-    public DateTime? LastVerifiedAt { get; }
+    public DateTime? LastVerifiedAt { get; internal init; }
 
-    public DateTime CreatedAt { get; }
+    public DateTime CreatedAt { get; internal init; }
 
-    public DateTime UpdatedAt { get; }
+    public DateTime UpdatedAt { get; internal init; }
 
-    public bool IsActive { get; }
-
-    public static Church Create(
-        Guid id,
-        string canonicalName,
-        string slug,
-        double latitude,
-        double longitude,
-        string? street,
-        string city,
-        string state,
-        string zip,
-        string? phoneNumber,
-        string? website,
-        string? emailAddress,
-        Guid? denominationId,
-        int worshipStyle,
-        string primaryLanguage,
-        bool? acceptsLgbtq,
-        bool? wheelchairAccessible,
-        bool? hasNursery,
-        bool? hasYouthProgram,
-        decimal confidenceScore,
-        DateTime? lastVerifiedAt,
-        DateTime createdAt,
-        DateTime updatedAt,
-        bool isActive = true)
-    {
-        if (id == Guid.Empty)
-        {
-            throw new ArgumentException("Id is required.", nameof(id));
-        }
-
-        if (string.IsNullOrWhiteSpace(canonicalName))
-        {
-            throw new ArgumentException("CanonicalName is required.", nameof(canonicalName));
-        }
-
-        if (string.IsNullOrWhiteSpace(slug))
-        {
-            throw new ArgumentException("Slug is required.", nameof(slug));
-        }
-
-        if (string.IsNullOrWhiteSpace(city))
-        {
-            throw new ArgumentException("City is required.", nameof(city));
-        }
-
-        if (state is not { Length: 2 } || string.IsNullOrWhiteSpace(state))
-        {
-            throw new ArgumentException("State must be a 2-letter code.", nameof(state));
-        }
-
-        if (string.IsNullOrWhiteSpace(zip))
-        {
-            throw new ArgumentException("Zip is required.", nameof(zip));
-        }
-
-        if (string.IsNullOrWhiteSpace(primaryLanguage))
-        {
-            throw new ArgumentException("PrimaryLanguage is required.", nameof(primaryLanguage));
-        }
-
-        if (latitude is < -90 or > 90)
-        {
-            throw new ArgumentOutOfRangeException(nameof(latitude), latitude, "Latitude must be between -90 and 90.");
-        }
-
-        if (longitude is < -180 or > 180)
-        {
-            throw new ArgumentOutOfRangeException(nameof(longitude), longitude, "Longitude must be between -180 and 180.");
-        }
-
-        if (worshipStyle is < 0 or > 5)
-        {
-            throw new ArgumentOutOfRangeException(nameof(worshipStyle), worshipStyle, "WorshipStyle must be 0-5 (Unknown..Liturgical).");
-        }
-
-        if (confidenceScore is < 0m or > 1m)
-        {
-            throw new ArgumentOutOfRangeException(nameof(confidenceScore), confidenceScore, "ConfidenceScore must be between 0 and 1.");
-        }
-
-        if (createdAt == default)
-        {
-            throw new ArgumentException("CreatedAt is required.", nameof(createdAt));
-        }
-
-        if (updatedAt == default)
-        {
-            throw new ArgumentException("UpdatedAt is required.", nameof(updatedAt));
-        }
-
-        return new Church(
-            id,
-            canonicalName,
-            slug,
-            latitude,
-            longitude,
-            street,
-            city,
-            state,
-            zip,
-            phoneNumber,
-            website,
-            emailAddress,
-            denominationId,
-            worshipStyle,
-            primaryLanguage,
-            acceptsLgbtq,
-            wheelchairAccessible,
-            hasNursery,
-            hasYouthProgram,
-            confidenceScore,
-            lastVerifiedAt,
-            createdAt,
-            updatedAt,
-            isActive);
-    }
+    public bool IsActive { get; internal init; } = true;
 }
