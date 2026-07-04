@@ -147,7 +147,7 @@ jobs:
       - name: Determine preview version
         id: gitversion
         run: |
-          $json = dotnet-gitversion /output json | Out-String
+          $json = dotnet dotnet-gitversion /output json | Out-String
           $version = ($json | ConvertFrom-Json).SemVer
           Write-Output "semVer=$version" >> $env:GITHUB_OUTPUT
 
