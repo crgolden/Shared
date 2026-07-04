@@ -1,0 +1,113 @@
+name: Build, test, and publish Shared package
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # GitVersion needs full history to count commits since the last release tag
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.x'
+
+      - name: Restore local tools
+        run: dotnet tool restore
+
+      - name: Restore
+        run: dotnet restore Shared.slnx
+
+      - name: Build
+        run: dotnet build Shared.slnx --no-restore --configuration Release
+
+      - name: Run unit tests
+        run: dotnet test Shared.Tests --no-build --configuration Release -- --filter-trait Category=Unit
+
+  # Every push to main auto-publishes a preview build — the version's base number is GitVersion's
+  # next-appropriate-semver bump above the last release tag (default patch, or minor/major/none via
+  # +semver: markers in commit messages), suffixed with a preview counter that increments per commit
+  # since that tag and resets whenever publish-release below creates a new one.
+  publish-preview:
+    runs-on: windows-latest
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.x'
+
+      - name: Restore local tools
+        run: dotnet tool restore
+
+      - name: Determine preview version
+        id: gitversion
+        run: |
+          $json = dotnet-gitversion /output json | Out-String
+          $version = ($json | ConvertFrom-Json).SemVer
+          Write-Output "semVer=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Pack
+        run: dotnet pack Shared/Shared.csproj --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.semVer }} --output ./nupkg
+
+      - name: Push to GitHub Packages
+        run: dotnet nuget push ./nupkg/*.nupkg --source "https://nuget.pkg.github.com/crgolden/index.json" --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+
+  # Manually triggered only. Publishes the exact stable version from Shared.csproj's <Version> (no
+  # pre-release suffix) and pushes a matching git tag — that tag is both the "this version was
+  # released" record and the reset point for publish-preview's commit-since-last-tag counter.
+  publish-release:
+    runs-on: windows-latest
+    needs: build
+    if: github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.x'
+
+      - name: Read release version from Shared.csproj
+        id: version
+        run: |
+          $version = dotnet msbuild Shared/Shared.csproj -getProperty:Version
+          Write-Output "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Pack
+        run: dotnet pack Shared/Shared.csproj --configuration Release -p:PackageVersion=${{ steps.version.outputs.version }} --output ./nupkg
+
+      - name: Push to GitHub Packages
+        run: dotnet nuget push ./nupkg/*.nupkg --source "https://nuget.pkg.github.com/crgolden/index.json" --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+
+      - name: Tag the release
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "v${{ steps.version.outputs.version }}"
+          git push origin "v${{ steps.version.outputs.version }}"

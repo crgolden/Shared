@@ -1,0 +1,64 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Shared</RootNamespace>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+    <!-- Package Identity -->
+    <PackageId>Shared</PackageId>
+    <Version>1.0.0</Version>
+    <Description>Shared utilities for `crgolden` apps.</Description>
+    <Company>crgolden</Company>
+    <Authors>Chris Golden</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/crgolden/Shared</PackageProjectUrl>
+  
+    <!-- Repository & Source Link -->
+    <RepositoryUrl>https://github.com/crgolden/Shared</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  
+    <!-- Symbols & Documentation -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  
+    <!-- Signing & Metadata -->
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\Shared.snk</AssemblyOriginatorKeyFile>
+    <PackageIcon>deeprog.png</PackageIcon>
+  
+    <!-- Build -->
+    <SkipDefaultEditorConfigAsAdditionalFile>true</SkipDefaultEditorConfigAsAdditionalFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+  	<None Include="..\deeprog.png" Pack="true" PackagePath="\" />
+  	<None Remove="..\stylecop.json" />
+  </ItemGroup>
+  
+  <ItemGroup>
+  	<AdditionalFiles Include="..\.editorconfig" />
+  	<AdditionalFiles Include="..\stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+  	<!--<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.9" />-->
+  	<!--<PackageReference Include="Microsoft.Extensions.Options" Version="10.0.9" />-->
+  	<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.16.0" />
+  	<PackageReference Include="SonarAnalyzer.CSharp" Version="10.28.0.143324">
+  	  <PrivateAssets>all</PrivateAssets>
+  	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+  	</PackageReference>
+  	<PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+  	  <PrivateAssets>all</PrivateAssets>
+  	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+  	</PackageReference>
+  </ItemGroup>
+
+</Project>

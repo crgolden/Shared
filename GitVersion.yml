@@ -1,0 +1,10 @@
+# Automatic CI publishes (push to main) always get a "preview" pre-release label — the stable,
+# tag-free version is only ever cut by the manual workflow_dispatch release job, which reads
+# Shared.csproj's <Version> directly and pushes the matching git tag that resets this counter.
+mode: ContinuousDeployment
+tag-prefix: '[vV]'
+branches:
+  main:
+    regex: ^main$
+    label: preview
+    increment: Patch
