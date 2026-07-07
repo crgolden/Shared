@@ -11,7 +11,7 @@ Cross-app shared library for the `crgolden` fleet, published as a **private** Nu
 
 ```powershell
 dotnet build Shared.slnx
-dotnet test Shared.Tests --filter-trait Category=Unit
+dotnet test Shared.Tests.Unit --filter-trait Category=Unit
 ```
 
 ## Versioning and publishing

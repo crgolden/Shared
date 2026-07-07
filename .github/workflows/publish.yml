@@ -95,9 +95,9 @@ jobs:
 
       - name: Run unit tests with coverage
         run: |
-          dotnet coverlet Shared.Tests\bin\Release\net10.0 `
+          dotnet coverlet Shared.Tests.Unit\bin\Release\net10.0 `
             --target "dotnet" `
-            --targetargs "test --project Shared.Tests --no-build --configuration Release -- --filter-trait Category=Unit --report-xunit-trx --report-xunit-trx-filename unit-tests.trx" `
+            --targetargs "test --project Shared.Tests.Unit --no-build --configuration Release -- --filter-trait Category=Unit --report-xunit-trx --report-xunit-trx-filename unit-tests.trx" `
             --format opencover --output "coverage.opencover.xml" `
             --skipautoprops `
             --exclude-by-attribute GeneratedCodeAttribute `
@@ -110,7 +110,7 @@ jobs:
         if: always()
         with:
           name: test-results
-          path: Shared.Tests/bin/Release/net10.0/TestResults/
+          path: Shared.Tests.Unit/bin/Release/net10.0/TestResults/
 
       - name: End Sonar analysis
         env:

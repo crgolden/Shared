@@ -1,4 +1,4 @@
-namespace Shared.Tests;
+namespace Shared.Tests.Unit;
 
 using Shared.Domain;
 
