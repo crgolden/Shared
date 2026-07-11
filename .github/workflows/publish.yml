@@ -155,9 +155,11 @@ jobs:
         run: dotnet pack Shared/Shared.csproj --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.semVer }} --output ./nupkg
 
       - name: Push to GitHub Packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           $package = Get-ChildItem ./nupkg/*.nupkg | Select-Object -First 1 -ExpandProperty FullName
-          dotnet nuget push $package --source "https://nuget.pkg.github.com/crgolden/index.json" --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+          dotnet nuget push $package --source "https://nuget.pkg.github.com/crgolden/index.json" --api-key $env:GITHUB_TOKEN --skip-duplicate
 
   # Manually triggered only. Publishes the exact stable version from Shared.csproj's <Version> (no
   # pre-release suffix) and pushes a matching git tag — that tag is both the "this version was
@@ -188,9 +190,11 @@ jobs:
         run: dotnet pack Shared/Shared.csproj --configuration Release -p:PackageVersion=${{ steps.version.outputs.version }} --output ./nupkg
 
       - name: Push to GitHub Packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           $package = Get-ChildItem ./nupkg/*.nupkg | Select-Object -First 1 -ExpandProperty FullName
-          dotnet nuget push $package --source "https://nuget.pkg.github.com/crgolden/index.json" --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+          dotnet nuget push $package --source "https://nuget.pkg.github.com/crgolden/index.json" --api-key $env:GITHUB_TOKEN --skip-duplicate
 
       - name: Tag the release
         run: |
