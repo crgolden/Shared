@@ -1,5 +1,6 @@
-﻿namespace Microsoft.Extensions.DependencyInjection;
+﻿namespace Shared.Extensions;
 
+using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Instrumentation.AspNetCore;
 
 /// <summary>

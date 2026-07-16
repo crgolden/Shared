@@ -62,7 +62,8 @@ dotnet_diagnostic.CA1032.severity = warning
 dotnet_diagnostic.CA1033.severity = none
 
 # CA1034: Nested types should not be visible
-dotnet_diagnostic.CA1034.severity = warning
+# Disabled: false positive on C# 14 extension blocks (https://github.com/dotnet/roslyn-analyzers/issues/7765)
+dotnet_diagnostic.CA1034.severity = none
 
 # CA1036: Override methods on comparable types
 dotnet_diagnostic.CA1036.severity = warning
