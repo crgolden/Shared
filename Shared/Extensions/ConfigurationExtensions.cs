@@ -11,13 +11,5 @@ public static class ConfigurationExtensions
         {
             return configuration.GetValue<T?>(key) ?? throw new InvalidOperationException($"Invalid '{key}'.");
         }
-
-#pragma warning disable SA1009
-        public string GetIdentitySecrets()
-        {
-            var serviceBusConnectionString = configuration.GetRequired<string>("ServiceBusConnectionString");
-            return serviceBusConnectionString;
-        }
-#pragma warning restore SA1009
     }
 }
