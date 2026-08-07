@@ -1,10 +1,5 @@
 namespace Shared.Domain;
 
-/// <summary>
-/// Builds a <see cref="Ministry"/> one field at a time. Each <c>With*</c> call validates that field
-/// immediately and returns <see langword="this"/> for chaining; <see cref="Build"/> only checks that
-/// every required field was set.
-/// </summary>
 public sealed class MinistryBuilder
 {
     private Guid? _id;

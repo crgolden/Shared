@@ -1,14 +1,5 @@
 namespace Shared.Domain;
 
-/// <summary>
-/// A church record, matching the <c>Churches</c> table schema exactly. The internal parameterless
-/// constructor plus <c>internal init</c> properties mean only <see cref="ChurchBuilder"/> (in this
-/// assembly) can ever populate a <see cref="Church"/> — external assemblies can't construct one via
-/// object initializer and bypass validation. Each <c>With*</c> call on the builder validates its own
-/// field immediately, and <see cref="ChurchBuilder.Build"/> refuses to construct until every required
-/// field has been set, so callers get an immediate, specific <see cref="ArgumentException"/> instead of
-/// a raw SQL constraint violation three layers away from the bad input.
-/// </summary>
 public sealed class Church
 {
     internal Church()

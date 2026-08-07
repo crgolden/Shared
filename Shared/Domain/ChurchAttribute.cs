@@ -1,11 +1,5 @@
 namespace Shared.Domain;
 
-/// <summary>
-/// A key/value attribute attached to a <see cref="Church"/> (e.g. denomination, worship style),
-/// matching the <c>ChurchAttributes</c> table schema exactly. The internal parameterless constructor
-/// plus <c>internal init</c> properties mean only <see cref="ChurchAttributeBuilder"/> (in this
-/// assembly) can ever populate a <see cref="ChurchAttribute"/>.
-/// </summary>
 public sealed class ChurchAttribute
 {
     internal ChurchAttribute()
