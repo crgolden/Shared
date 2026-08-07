@@ -8,9 +8,9 @@ public sealed class Church
 
     public Guid Id { get; internal init; }
 
-    public string CanonicalName { get; internal init; } = string.Empty;
+    required public string CanonicalName { get; init; }
 
-    public string Slug { get; internal init; } = string.Empty;
+    required public string Slug { get; init; }
 
     public double Latitude { get; internal init; }
 
@@ -18,11 +18,11 @@ public sealed class Church
 
     public string? Street { get; internal init; }
 
-    public string City { get; internal init; } = string.Empty;
+    required public string City { get; init; }
 
-    public string State { get; internal init; } = string.Empty;
+    required public string State { get; init; }
 
-    public string Zip { get; internal init; } = string.Empty;
+    required public string Zip { get; init; }
 
     public string? PhoneNumber { get; internal init; }
 
@@ -34,7 +34,7 @@ public sealed class Church
 
     public int WorshipStyle { get; internal init; }
 
-    public string PrimaryLanguage { get; internal init; } = string.Empty;
+    required public string PrimaryLanguage { get; init; }
 
     public bool? AcceptsLGBTQ { get; internal init; }
 

@@ -10,11 +10,11 @@ public sealed class ChurchAttribute
 
     public Guid ChurchId { get; internal init; }
 
-    public string Key { get; internal init; } = string.Empty;
+    required public string Key { get; init; }
 
-    public string Value { get; internal init; } = string.Empty;
+    required public string Value { get; init; }
 
-    public string Source { get; internal init; } = string.Empty;
+    required public string Source { get; init; }
 
     public decimal Confidence { get; internal init; }
 

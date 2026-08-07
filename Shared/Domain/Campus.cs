@@ -10,15 +10,15 @@ public sealed class Campus
 
     public Guid ChurchId { get; internal init; }
 
-    public string Name { get; internal init; } = string.Empty;
+    required public string Name { get; init; }
 
     public string? Street { get; internal init; }
 
-    public string City { get; internal init; } = string.Empty;
+    required public string City { get; init; }
 
-    public string State { get; internal init; } = string.Empty;
+    required public string State { get; init; }
 
-    public string Zip { get; internal init; } = string.Empty;
+    required public string Zip { get; init; }
 
     public double Latitude { get; internal init; }
 
