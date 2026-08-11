@@ -5,7 +5,13 @@ Cross-app shared library for the `crgolden` fleet, published as a **private** Nu
 ## Contents
 
 - `ServiceCollectionExtensions.AddObservability()` — configures `AspNetCoreTraceInstrumentationOptions` to exclude `/health` requests from tracing.
-- `Shared.Domain` — self-validating domain entities (`Church`, `Campus`, `Ministry`, `ServiceSchedule`, `ChurchAttribute`) mirroring the `Directory` church-database schema. Private constructors plus static `Create(...)` factories enforce every NOT NULL/range invariant at construction, so an invalid instance can never exist in memory — bad input fails fast with a specific `ArgumentException`/`ArgumentOutOfRangeException` instead of surfacing as a raw SQL constraint violation deep inside a write path.
+- `Shared.Domain` — self-validating domain entities (`Church`, `Campus`, `Ministry`, `ServiceSchedule`, `ChurchAttribute`) mirroring the `Directory` church-database schema. Bad input fails fast with a specific `ArgumentException`/`ArgumentOutOfRangeException` instead of surfacing as a raw SQL constraint violation deep inside a write path.
+
+### The builder pattern
+
+Each entity (`Church`, `Campus`, `Ministry`, `ServiceSchedule`, `ChurchAttribute`) follows the same shape: an internal parameterless constructor and `internal init` properties mean the entity can only ever be populated by its matching builder (e.g. `ChurchBuilder` for `Church`) — an external assembly can't construct one via an object initializer and bypass validation.
+
+The builder validates one field at a time. Each `With*` call checks that field immediately and returns the builder for chaining; `Build()` only checks that every required field was set, since each one was already validated the moment it was supplied. The result: a caller gets an immediate, specific exception pointing at exactly the bad field, rather than a raw SQL constraint violation three layers away from the input that caused it.
 
 ## Building and testing
 

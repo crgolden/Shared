@@ -10,7 +10,7 @@ public sealed class Ministry
 
     public Guid ChurchId { get; internal init; }
 
-    public string Name { get; internal init; } = string.Empty;
+    required public string Name { get; init; }
 
     public string? Description { get; internal init; }
 
