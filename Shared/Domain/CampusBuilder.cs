@@ -1,10 +1,5 @@
 namespace Shared.Domain;
 
-/// <summary>
-/// Builds a <see cref="Campus"/> one field at a time. Each <c>With*</c> call validates that field
-/// immediately and returns <see langword="this"/> for chaining; <see cref="Build"/> only checks that
-/// every required field was set.
-/// </summary>
 public sealed class CampusBuilder
 {
     private Guid? _id;

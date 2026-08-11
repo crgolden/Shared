@@ -40,7 +40,6 @@ public sealed class ChurchTests
     [Fact]
     public void WithCity_Null_Throws()
     {
-        // The exact bug this domain model exists to prevent: a null City can never reach SQL.
         var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithCity(null!));
         Assert.Equal("city", ex.ParamName);
     }
@@ -101,8 +100,6 @@ public sealed class ChurchTests
     [Fact]
     public void Build_ZeroZeroCoordinates_IsAllowed()
     {
-        // (0,0) is a deliberate "not yet geocoded" fallback used elsewhere in the pipeline, not an
-        // error — the domain model must not reject it, only genuinely out-of-range values.
         var church = Build(latitude: 0, longitude: 0);
 
         Assert.Equal(0, church.Latitude);
@@ -144,8 +141,6 @@ public sealed class ChurchTests
     [Fact]
     public void Build_RequiredFieldNeverSet_Throws()
     {
-        // Build() itself only checks presence — each field's own validity was already enforced the
-        // instant its With* method was called, so this covers the "forgot to call WithCity" case.
         var builder = new ChurchBuilder()
             .WithId(Guid.NewGuid())
             .WithCanonicalName("Grace Church")

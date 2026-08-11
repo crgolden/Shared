@@ -1,11 +1,5 @@
 namespace Shared.Domain;
 
-/// <summary>
-/// A recurring service time for a <see cref="Church"/> (optionally scoped to a <see cref="Campus"/>),
-/// matching the <c>ServiceSchedules</c> table schema exactly. The internal parameterless constructor
-/// plus <c>internal init</c> properties mean only <see cref="ServiceScheduleBuilder"/> (in this
-/// assembly) can ever populate a <see cref="ServiceSchedule"/>.
-/// </summary>
 public sealed class ServiceSchedule
 {
     internal ServiceSchedule()
