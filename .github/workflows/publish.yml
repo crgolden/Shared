@@ -10,7 +10,6 @@ on:
 
 jobs:
   build:
-    if: github.actor != 'dependabot[bot]'
     name: Build and analyze
     runs-on: windows-latest
     permissions:
@@ -50,7 +49,7 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar-scanner
 
       - name: Install SonarQube Cloud scanner
-        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true' && github.actor != 'dependabot[bot]'
         shell: powershell
         run: |
           New-Item -Path ${{ runner.temp }}\scanner -ItemType Directory
@@ -73,6 +72,7 @@ jobs:
         run: dotnet tool restore
 
       - name: Begin Sonar analysis
+        if: github.actor != 'dependabot[bot]'
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
@@ -114,6 +114,7 @@ jobs:
           path: Shared.Tests.Unit/bin/Release/net10.0/TestResults/
 
       - name: End Sonar analysis
+        if: github.actor != 'dependabot[bot]'
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
