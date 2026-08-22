@@ -111,6 +111,7 @@ jobs:
         if: always()
         with:
           name: test-results
+          if-no-files-found: error
           path: Shared.Tests.Unit/bin/Release/net10.0/TestResults/
 
       - name: End Sonar analysis
