@@ -22,9 +22,9 @@ public sealed class ChurchBuilder
     private bool? _hasNursery;
     private bool? _hasYouthProgram;
     private decimal? _confidenceScore;
-    private DateTime? _lastVerifiedAt;
-    private DateTime? _createdAt;
-    private DateTime? _updatedAt;
+    private DateTimeOffset? _lastVerifiedAt;
+    private DateTimeOffset? _createdAt;
+    private DateTimeOffset? _updatedAt;
     private bool _isActive = true;
 
     public ChurchBuilder WithId(Guid id)
@@ -202,13 +202,13 @@ public sealed class ChurchBuilder
         return this;
     }
 
-    public ChurchBuilder WithLastVerifiedAt(DateTime? lastVerifiedAt)
+    public ChurchBuilder WithLastVerifiedAt(DateTimeOffset? lastVerifiedAt)
     {
         _lastVerifiedAt = lastVerifiedAt;
         return this;
     }
 
-    public ChurchBuilder WithCreatedAt(DateTime createdAt)
+    public ChurchBuilder WithCreatedAt(DateTimeOffset createdAt)
     {
         if (createdAt == default)
         {
@@ -219,7 +219,7 @@ public sealed class ChurchBuilder
         return this;
     }
 
-    public ChurchBuilder WithUpdatedAt(DateTime updatedAt)
+    public ChurchBuilder WithUpdatedAt(DateTimeOffset updatedAt)
     {
         if (updatedAt == default)
         {
@@ -236,103 +236,35 @@ public sealed class ChurchBuilder
         return this;
     }
 
-    public Church Build()
-    {
-        EnsureRequiredFieldsSet();
-        return new Church
+    public Church Build() =>
+        new Church
         {
-            Id = _id!.Value,
-            CanonicalName = _canonicalName!,
-            Slug = _slug!,
-            Latitude = _latitude!.Value,
-            Longitude = _longitude!.Value,
+            Id = _id ?? throw NotCalled(nameof(WithId)),
+            CanonicalName = _canonicalName ?? throw NotCalled(nameof(WithCanonicalName)),
+            Slug = _slug ?? throw NotCalled(nameof(WithSlug)),
+            Latitude = _latitude ?? throw NotCalled(nameof(WithLatitude)),
+            Longitude = _longitude ?? throw NotCalled(nameof(WithLongitude)),
             Street = _street,
-            City = _city!,
-            State = _state!,
-            Zip = _zip!,
+            City = _city ?? throw NotCalled(nameof(WithCity)),
+            State = _state ?? throw NotCalled(nameof(WithState)),
+            Zip = _zip ?? throw NotCalled(nameof(WithZip)),
             PhoneNumber = _phoneNumber,
             Website = _website,
             EmailAddress = _emailAddress,
             DenominationId = _denominationId,
-            WorshipStyle = _worshipStyle!.Value,
-            PrimaryLanguage = _primaryLanguage!,
+            WorshipStyle = _worshipStyle ?? throw NotCalled(nameof(WithWorshipStyle)),
+            PrimaryLanguage = _primaryLanguage ?? throw NotCalled(nameof(WithPrimaryLanguage)),
             AcceptsLGBTQ = _acceptsLgbtq,
             WheelchairAccessible = _wheelchairAccessible,
             HasNursery = _hasNursery,
             HasYouthProgram = _hasYouthProgram,
-            ConfidenceScore = _confidenceScore!.Value,
+            ConfidenceScore = _confidenceScore ?? throw NotCalled(nameof(WithConfidenceScore)),
             LastVerifiedAt = _lastVerifiedAt,
-            CreatedAt = _createdAt!.Value,
-            UpdatedAt = _updatedAt!.Value,
+            CreatedAt = _createdAt ?? throw NotCalled(nameof(WithCreatedAt)),
+            UpdatedAt = _updatedAt ?? throw NotCalled(nameof(WithUpdatedAt)),
             IsActive = _isActive,
         };
-    }
 
-    private void EnsureRequiredFieldsSet()
-    {
-        if (_id is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithId)} must be called before {nameof(Build)}.");
-        }
-
-        if (_canonicalName is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithCanonicalName)} must be called before {nameof(Build)}.");
-        }
-
-        if (_slug is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithSlug)} must be called before {nameof(Build)}.");
-        }
-
-        if (_latitude is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithLatitude)} must be called before {nameof(Build)}.");
-        }
-
-        if (_longitude is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithLongitude)} must be called before {nameof(Build)}.");
-        }
-
-        if (_city is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithCity)} must be called before {nameof(Build)}.");
-        }
-
-        if (_state is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithState)} must be called before {nameof(Build)}.");
-        }
-
-        if (_zip is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithZip)} must be called before {nameof(Build)}.");
-        }
-
-        if (_worshipStyle is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithWorshipStyle)} must be called before {nameof(Build)}.");
-        }
-
-        if (_primaryLanguage is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithPrimaryLanguage)} must be called before {nameof(Build)}.");
-        }
-
-        if (_confidenceScore is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithConfidenceScore)} must be called before {nameof(Build)}.");
-        }
-
-        if (_createdAt is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithCreatedAt)} must be called before {nameof(Build)}.");
-        }
-
-        if (_updatedAt is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithUpdatedAt)} must be called before {nameof(Build)}.");
-        }
-    }
+    private static InvalidOperationException NotCalled(string setterName) =>
+        new InvalidOperationException($"{setterName} must be called before {nameof(Build)}.");
 }

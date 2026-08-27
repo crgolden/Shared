@@ -24,7 +24,7 @@ jobs:
 
       - uses: actions/checkout@v6
         with:
-          fetch-depth: 0 # GitVersion and Sonar both need full history
+          fetch-depth: 0
 
       - name: Cache NuGet packages
         uses: actions/cache@v5
@@ -122,10 +122,6 @@ jobs:
         run: |
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="$env:SONAR_TOKEN"
 
-  # Every push to main auto-publishes a preview build — the version's base number is GitVersion's
-  # next-appropriate-semver bump above the last release tag (default patch, or minor/major/none via
-  # +semver: markers in commit messages), suffixed with a preview counter that increments per commit
-  # since that tag and resets whenever publish-release below creates a new one.
   publish-preview:
     runs-on: windows-latest
     needs: build
@@ -164,9 +160,6 @@ jobs:
           $package = Get-ChildItem ./nupkg/*.nupkg | Select-Object -First 1 -ExpandProperty FullName
           dotnet nuget push $package --source "https://nuget.pkg.github.com/crgolden/index.json" --api-key $env:GITHUB_TOKEN --skip-duplicate
 
-  # Manually triggered only. Publishes the exact stable version from Shared.csproj's <Version> (no
-  # pre-release suffix) and pushes a matching git tag — that tag is both the "this version was
-  # released" record and the reset point for publish-preview's commit-since-last-tag counter.
   publish-release:
     runs-on: windows-latest
     needs: build

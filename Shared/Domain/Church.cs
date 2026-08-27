@@ -46,11 +46,11 @@ public sealed class Church
 
     public decimal ConfidenceScore { get; internal init; }
 
-    public DateTime? LastVerifiedAt { get; internal init; }
+    public DateTimeOffset? LastVerifiedAt { get; internal init; }
 
-    public DateTime CreatedAt { get; internal init; }
+    public DateTimeOffset CreatedAt { get; internal init; }
 
-    public DateTime UpdatedAt { get; internal init; }
+    public DateTimeOffset UpdatedAt { get; internal init; }
 
     public bool IsActive { get; internal init; } = true;
 }

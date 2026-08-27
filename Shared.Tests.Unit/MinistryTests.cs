@@ -8,9 +8,11 @@ public sealed class MinistryTests
     [Fact]
     public void Build_AllValidInput_ReturnsMinistry()
     {
-        var ministry = Build();
+        var ministryName = TestValues.NewName();
 
-        Assert.Equal("Youth Group", ministry.Name);
+        var ministry = Build(name: ministryName);
+
+        Assert.Equal(ministryName, ministry.Name);
     }
 
     [Fact]
@@ -37,7 +39,20 @@ public sealed class MinistryTests
     [Fact]
     public void WithDescription_Null_IsAllowed()
     {
-        var ministry = Build(description: null);
+        var ministryId = Guid.NewGuid();
+        var churchId = Guid.NewGuid();
+        var ministryName = TestValues.NewName();
+        var createdAt = TestValues.NewUtcTimestamp();
+        var updatedAt = TestValues.NewUtcTimestamp();
+
+        var ministry = new MinistryBuilder()
+            .WithId(ministryId)
+            .WithChurchId(churchId)
+            .WithName(ministryName)
+            .WithDescription(null)
+            .WithCreatedAt(createdAt)
+            .WithUpdatedAt(updatedAt)
+            .Build();
 
         Assert.Null(ministry.Description);
     }
@@ -59,11 +74,15 @@ public sealed class MinistryTests
     [Fact]
     public void Build_RequiredFieldNeverSet_Throws()
     {
+        var ministryId = Guid.NewGuid();
+        var churchId = Guid.NewGuid();
+        var createdAt = TestValues.NewUtcTimestamp();
+        var updatedAt = TestValues.NewUtcTimestamp();
         var builder = new MinistryBuilder()
-            .WithId(Guid.NewGuid())
-            .WithChurchId(Guid.NewGuid())
-            .WithCreatedAt(DateTime.UtcNow)
-            .WithUpdatedAt(DateTime.UtcNow);
+            .WithId(ministryId)
+            .WithChurchId(churchId)
+            .WithCreatedAt(createdAt)
+            .WithUpdatedAt(updatedAt);
 
         var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
         Assert.Contains("WithName", ex.Message, StringComparison.Ordinal);
@@ -72,19 +91,15 @@ public sealed class MinistryTests
     private static Ministry Build(
         Guid? id = null,
         Guid? churchId = null,
-        string name = "Youth Group",
-        string? description = "Teens",
-        DateTime? createdAt = null,
-        DateTime? updatedAt = null)
-    {
-        var now = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        return new MinistryBuilder()
+        string? name = null,
+        DateTimeOffset? createdAt = null,
+        DateTimeOffset? updatedAt = null) =>
+        new MinistryBuilder()
             .WithId(id ?? Guid.NewGuid())
             .WithChurchId(churchId ?? Guid.NewGuid())
-            .WithName(name)
-            .WithDescription(description)
-            .WithCreatedAt(createdAt ?? now)
-            .WithUpdatedAt(updatedAt ?? now)
+            .WithName(name ?? TestValues.NewName())
+            .WithDescription(TestValues.NewDescription())
+            .WithCreatedAt(createdAt ?? TestValues.NewUtcTimestamp())
+            .WithUpdatedAt(updatedAt ?? TestValues.NewUtcTimestamp())
             .Build();
-    }
 }

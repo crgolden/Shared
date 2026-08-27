@@ -11,8 +11,8 @@ public sealed class CampusBuilder
     private string? _zip;
     private double? _latitude;
     private double? _longitude;
-    private DateTime? _createdAt;
-    private DateTime? _updatedAt;
+    private DateTimeOffset? _createdAt;
+    private DateTimeOffset? _updatedAt;
 
     public CampusBuilder WithId(Guid id)
     {
@@ -108,7 +108,7 @@ public sealed class CampusBuilder
         return this;
     }
 
-    public CampusBuilder WithCreatedAt(DateTime createdAt)
+    public CampusBuilder WithCreatedAt(DateTimeOffset createdAt)
     {
         if (createdAt == default)
         {
@@ -119,7 +119,7 @@ public sealed class CampusBuilder
         return this;
     }
 
-    public CampusBuilder WithUpdatedAt(DateTime updatedAt)
+    public CampusBuilder WithUpdatedAt(DateTimeOffset updatedAt)
     {
         if (updatedAt == default)
         {
@@ -130,75 +130,22 @@ public sealed class CampusBuilder
         return this;
     }
 
-    public Campus Build()
-    {
-        EnsureRequiredFieldsSet();
-        return new Campus
+    public Campus Build() =>
+        new Campus
         {
-            Id = _id!.Value,
-            ChurchId = _churchId!.Value,
-            Name = _name!,
+            Id = _id ?? throw NotCalled(nameof(WithId)),
+            ChurchId = _churchId ?? throw NotCalled(nameof(WithChurchId)),
+            Name = _name ?? throw NotCalled(nameof(WithName)),
             Street = _street,
-            City = _city!,
-            State = _state!,
-            Zip = _zip!,
-            Latitude = _latitude!.Value,
-            Longitude = _longitude!.Value,
-            CreatedAt = _createdAt!.Value,
-            UpdatedAt = _updatedAt!.Value,
+            City = _city ?? throw NotCalled(nameof(WithCity)),
+            State = _state ?? throw NotCalled(nameof(WithState)),
+            Zip = _zip ?? throw NotCalled(nameof(WithZip)),
+            Latitude = _latitude ?? throw NotCalled(nameof(WithLatitude)),
+            Longitude = _longitude ?? throw NotCalled(nameof(WithLongitude)),
+            CreatedAt = _createdAt ?? throw NotCalled(nameof(WithCreatedAt)),
+            UpdatedAt = _updatedAt ?? throw NotCalled(nameof(WithUpdatedAt)),
         };
-    }
 
-    private void EnsureRequiredFieldsSet()
-    {
-        if (_id is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithId)} must be called before {nameof(Build)}.");
-        }
-
-        if (_churchId is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithChurchId)} must be called before {nameof(Build)}.");
-        }
-
-        if (_name is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithName)} must be called before {nameof(Build)}.");
-        }
-
-        if (_city is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithCity)} must be called before {nameof(Build)}.");
-        }
-
-        if (_state is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithState)} must be called before {nameof(Build)}.");
-        }
-
-        if (_zip is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithZip)} must be called before {nameof(Build)}.");
-        }
-
-        if (_latitude is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithLatitude)} must be called before {nameof(Build)}.");
-        }
-
-        if (_longitude is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithLongitude)} must be called before {nameof(Build)}.");
-        }
-
-        if (_createdAt is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithCreatedAt)} must be called before {nameof(Build)}.");
-        }
-
-        if (_updatedAt is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithUpdatedAt)} must be called before {nameof(Build)}.");
-        }
-    }
+    private static InvalidOperationException NotCalled(string setterName) =>
+        new InvalidOperationException($"{setterName} must be called before {nameof(Build)}.");
 }

@@ -14,7 +14,7 @@ public sealed class Ministry
 
     public string? Description { get; internal init; }
 
-    public DateTime CreatedAt { get; internal init; }
+    public DateTimeOffset CreatedAt { get; internal init; }
 
-    public DateTime UpdatedAt { get; internal init; }
+    public DateTimeOffset UpdatedAt { get; internal init; }
 }

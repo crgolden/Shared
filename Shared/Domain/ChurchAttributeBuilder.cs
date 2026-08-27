@@ -8,8 +8,8 @@ public sealed class ChurchAttributeBuilder
     private string? _value;
     private string? _source;
     private decimal? _confidence;
-    private DateTime? _createdAt;
-    private DateTime? _updatedAt;
+    private DateTimeOffset? _createdAt;
+    private DateTimeOffset? _updatedAt;
 
     public ChurchAttributeBuilder WithId(Guid id)
     {
@@ -77,7 +77,7 @@ public sealed class ChurchAttributeBuilder
         return this;
     }
 
-    public ChurchAttributeBuilder WithCreatedAt(DateTime createdAt)
+    public ChurchAttributeBuilder WithCreatedAt(DateTimeOffset createdAt)
     {
         if (createdAt == default)
         {
@@ -88,7 +88,7 @@ public sealed class ChurchAttributeBuilder
         return this;
     }
 
-    public ChurchAttributeBuilder WithUpdatedAt(DateTime updatedAt)
+    public ChurchAttributeBuilder WithUpdatedAt(DateTimeOffset updatedAt)
     {
         if (updatedAt == default)
         {
@@ -99,62 +99,19 @@ public sealed class ChurchAttributeBuilder
         return this;
     }
 
-    public ChurchAttribute Build()
-    {
-        EnsureRequiredFieldsSet();
-        return new ChurchAttribute
+    public ChurchAttribute Build() =>
+        new ChurchAttribute
         {
-            Id = _id!.Value,
-            ChurchId = _churchId!.Value,
-            Key = _key!,
-            Value = _value!,
-            Source = _source!,
-            Confidence = _confidence!.Value,
-            CreatedAt = _createdAt!.Value,
-            UpdatedAt = _updatedAt!.Value,
+            Id = _id ?? throw NotCalled(nameof(WithId)),
+            ChurchId = _churchId ?? throw NotCalled(nameof(WithChurchId)),
+            Key = _key ?? throw NotCalled(nameof(WithKey)),
+            Value = _value ?? throw NotCalled(nameof(WithValue)),
+            Source = _source ?? throw NotCalled(nameof(WithSource)),
+            Confidence = _confidence ?? throw NotCalled(nameof(WithConfidence)),
+            CreatedAt = _createdAt ?? throw NotCalled(nameof(WithCreatedAt)),
+            UpdatedAt = _updatedAt ?? throw NotCalled(nameof(WithUpdatedAt)),
         };
-    }
 
-    private void EnsureRequiredFieldsSet()
-    {
-        if (_id is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithId)} must be called before {nameof(Build)}.");
-        }
-
-        if (_churchId is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithChurchId)} must be called before {nameof(Build)}.");
-        }
-
-        if (_key is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithKey)} must be called before {nameof(Build)}.");
-        }
-
-        if (_value is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithValue)} must be called before {nameof(Build)}.");
-        }
-
-        if (_source is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithSource)} must be called before {nameof(Build)}.");
-        }
-
-        if (_confidence is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithConfidence)} must be called before {nameof(Build)}.");
-        }
-
-        if (_createdAt is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithCreatedAt)} must be called before {nameof(Build)}.");
-        }
-
-        if (_updatedAt is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithUpdatedAt)} must be called before {nameof(Build)}.");
-        }
-    }
+    private static InvalidOperationException NotCalled(string setterName) =>
+        new InvalidOperationException($"{setterName} must be called before {nameof(Build)}.");
 }

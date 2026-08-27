@@ -8,10 +8,13 @@ public sealed class CampusTests
     [Fact]
     public void Build_AllValidInput_ReturnsCampus()
     {
-        var campus = Build();
+        var campusName = TestValues.NewName();
+        var campusCity = TestValues.NewCity();
 
-        Assert.Equal("North Campus", campus.Name);
-        Assert.Equal("Denver", campus.City);
+        var campus = Build(name: campusName, city: campusCity);
+
+        Assert.Equal(campusName, campus.Name);
+        Assert.Equal(campusCity, campus.City);
     }
 
     [Fact]
@@ -45,14 +48,18 @@ public sealed class CampusTests
     [Fact]
     public void WithState_WrongLength_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithState("CO-North"));
+        var wrongLengthStateCode = TestValues.LowercaseToken(Random.Shared.Next(3, 10));
+
+        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithState(wrongLengthStateCode));
         Assert.Equal("state", ex.ParamName);
     }
 
     [Fact]
     public void WithZip_Blank_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithZip(" "));
+        var blankZip = new string(' ', Random.Shared.Next(1, 4));
+
+        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithZip(blankZip));
         Assert.Equal("zip", ex.ParamName);
     }
 
@@ -91,16 +98,25 @@ public sealed class CampusTests
     [Fact]
     public void Build_RequiredFieldNeverSet_Throws()
     {
+        var campusId = Guid.NewGuid();
+        var churchId = Guid.NewGuid();
+        var campusName = TestValues.NewName();
+        var state = TestValues.NewStateCode();
+        var zip = TestValues.NewZip();
+        var latitude = TestValues.NewLatitude();
+        var longitude = TestValues.NewLongitude();
+        var createdAt = TestValues.NewUtcTimestamp();
+        var updatedAt = TestValues.NewUtcTimestamp();
         var builder = new CampusBuilder()
-            .WithId(Guid.NewGuid())
-            .WithChurchId(Guid.NewGuid())
-            .WithName("North Campus")
-            .WithState("CO")
-            .WithZip("80201")
-            .WithLatitude(0)
-            .WithLongitude(0)
-            .WithCreatedAt(DateTime.UtcNow)
-            .WithUpdatedAt(DateTime.UtcNow);
+            .WithId(campusId)
+            .WithChurchId(churchId)
+            .WithName(campusName)
+            .WithState(state)
+            .WithZip(zip)
+            .WithLatitude(latitude)
+            .WithLongitude(longitude)
+            .WithCreatedAt(createdAt)
+            .WithUpdatedAt(updatedAt);
 
         var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
         Assert.Contains("WithCity", ex.Message, StringComparison.Ordinal);
@@ -109,28 +125,25 @@ public sealed class CampusTests
     private static Campus Build(
         Guid? id = null,
         Guid? churchId = null,
-        string name = "North Campus",
-        string city = "Denver",
-        string state = "CO",
-        string zip = "80201",
-        double latitude = 39.7,
-        double longitude = -104.9,
-        DateTime? createdAt = null,
-        DateTime? updatedAt = null)
-    {
-        var now = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        return new CampusBuilder()
+        string? name = null,
+        string? city = null,
+        string? state = null,
+        string? zip = null,
+        double? latitude = null,
+        double? longitude = null,
+        DateTimeOffset? createdAt = null,
+        DateTimeOffset? updatedAt = null) =>
+        new CampusBuilder()
             .WithId(id ?? Guid.NewGuid())
             .WithChurchId(churchId ?? Guid.NewGuid())
-            .WithName(name)
-            .WithStreet("1 N St")
-            .WithCity(city)
-            .WithState(state)
-            .WithZip(zip)
-            .WithLatitude(latitude)
-            .WithLongitude(longitude)
-            .WithCreatedAt(createdAt ?? now)
-            .WithUpdatedAt(updatedAt ?? now)
+            .WithName(name ?? TestValues.NewName())
+            .WithStreet(TestValues.NewStreet())
+            .WithCity(city ?? TestValues.NewCity())
+            .WithState(state ?? TestValues.NewStateCode())
+            .WithZip(zip ?? TestValues.NewZip())
+            .WithLatitude(latitude ?? TestValues.NewLatitude())
+            .WithLongitude(longitude ?? TestValues.NewLongitude())
+            .WithCreatedAt(createdAt ?? TestValues.NewUtcTimestamp())
+            .WithUpdatedAt(updatedAt ?? TestValues.NewUtcTimestamp())
             .Build();
-    }
 }

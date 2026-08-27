@@ -28,3 +28,5 @@ dotnet test Shared.Tests.Unit --filter-trait Category=Unit
 - **Manual stable releases** — trigger the workflow manually (`workflow_dispatch`) to cut a real release. It reads the version straight from `Shared/Shared.csproj`'s `<Version>` element (bump that by hand first), publishes that exact number with no pre-release suffix, and pushes a matching `v<version>` git tag. That tag is both the release record and the reset point for the next automatic preview build's commit counter.
 
 Both paths push to the private `crgolden` GitHub Packages feed (`https://nuget.pkg.github.com/crgolden/index.json`, already configured in `NuGet.Config`).
+
+The workflow checks out the full history rather than a shallow clone, because two separate steps need it: GitVersion counts commits back to the last release tag to build the preview suffix, and SonarCloud reads git blame to attribute new code. A shallow clone breaks the first loudly and degrades the second silently.

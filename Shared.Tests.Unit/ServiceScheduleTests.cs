@@ -8,10 +8,13 @@ public sealed class ServiceScheduleTests
     [Fact]
     public void Build_AllValidInput_ReturnsServiceSchedule()
     {
-        var schedule = Build();
+        var scheduledDayOfWeek = TestValues.NewDayOfWeek();
+        var scheduledStartTime = TestValues.NewTimeOfDay();
 
-        Assert.Equal((byte)0, schedule.DayOfWeek);
-        Assert.Equal(new TimeOnly(10, 30), schedule.StartTime);
+        var schedule = Build(dayOfWeek: scheduledDayOfWeek, startTime: scheduledStartTime);
+
+        Assert.Equal(scheduledDayOfWeek, schedule.DayOfWeek);
+        Assert.Equal(scheduledStartTime, schedule.StartTime);
     }
 
     [Fact]
@@ -60,12 +63,17 @@ public sealed class ServiceScheduleTests
     [Fact]
     public void Build_RequiredFieldNeverSet_Throws()
     {
+        var scheduleId = Guid.NewGuid();
+        var churchId = Guid.NewGuid();
+        var scheduledDayOfWeek = TestValues.NewDayOfWeek();
+        var createdAt = TestValues.NewUtcTimestamp();
+        var updatedAt = TestValues.NewUtcTimestamp();
         var builder = new ServiceScheduleBuilder()
-            .WithId(Guid.NewGuid())
-            .WithChurchId(Guid.NewGuid())
-            .WithDayOfWeek(0)
-            .WithCreatedAt(DateTime.UtcNow)
-            .WithUpdatedAt(DateTime.UtcNow);
+            .WithId(scheduleId)
+            .WithChurchId(churchId)
+            .WithDayOfWeek(scheduledDayOfWeek)
+            .WithCreatedAt(createdAt)
+            .WithUpdatedAt(updatedAt);
 
         var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
         Assert.Contains("WithStartTime", ex.Message, StringComparison.Ordinal);
@@ -75,20 +83,18 @@ public sealed class ServiceScheduleTests
         Guid? id = null,
         Guid? churchId = null,
         Guid? campusId = null,
-        byte dayOfWeek = 0,
-        DateTime? createdAt = null,
-        DateTime? updatedAt = null)
-    {
-        var now = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        return new ServiceScheduleBuilder()
+        byte? dayOfWeek = null,
+        TimeOnly? startTime = null,
+        DateTimeOffset? createdAt = null,
+        DateTimeOffset? updatedAt = null) =>
+        new ServiceScheduleBuilder()
             .WithId(id ?? Guid.NewGuid())
             .WithChurchId(churchId ?? Guid.NewGuid())
             .WithCampusId(campusId)
-            .WithDayOfWeek(dayOfWeek)
-            .WithStartTime(new TimeOnly(10, 30))
-            .WithDescription("Sunday Worship")
-            .WithCreatedAt(createdAt ?? now)
-            .WithUpdatedAt(updatedAt ?? now)
+            .WithDayOfWeek(dayOfWeek ?? TestValues.NewDayOfWeek())
+            .WithStartTime(startTime ?? TestValues.NewTimeOfDay())
+            .WithDescription(TestValues.NewDescription())
+            .WithCreatedAt(createdAt ?? TestValues.NewUtcTimestamp())
+            .WithUpdatedAt(updatedAt ?? TestValues.NewUtcTimestamp())
             .Build();
-    }
 }

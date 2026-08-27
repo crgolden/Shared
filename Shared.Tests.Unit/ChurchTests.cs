@@ -8,11 +8,15 @@ public sealed class ChurchTests
     [Fact]
     public void Build_AllValidInput_ReturnsChurch()
     {
-        var church = ValidChurch();
+        var canonicalName = TestValues.NewName();
+        var city = TestValues.NewCity();
+        var state = TestValues.NewStateCode();
 
-        Assert.Equal("Grace Church", church.CanonicalName);
-        Assert.Equal("Phoenix", church.City);
-        Assert.Equal("AZ", church.State);
+        var church = Build(canonicalName: canonicalName, city: city, state: state);
+
+        Assert.Equal(canonicalName, church.CanonicalName);
+        Assert.Equal(city, church.City);
+        Assert.Equal(state, church.State);
         Assert.True(church.IsActive);
     }
 
@@ -26,7 +30,9 @@ public sealed class ChurchTests
     [Fact]
     public void WithCanonicalName_Blank_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithCanonicalName("  "));
+        var blankCanonicalName = new string(' ', Random.Shared.Next(1, 4));
+
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithCanonicalName(blankCanonicalName));
         Assert.Equal("canonicalName", ex.ParamName);
     }
 
@@ -47,7 +53,9 @@ public sealed class ChurchTests
     [Fact]
     public void WithCity_Blank_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithCity("   "));
+        var blankCity = new string(' ', Random.Shared.Next(1, 4));
+
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithCity(blankCity));
         Assert.Equal("city", ex.ParamName);
     }
 
@@ -61,7 +69,9 @@ public sealed class ChurchTests
     [Fact]
     public void WithState_WrongLength_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithState("Arizona"));
+        var wrongLengthStateCode = TestValues.LowercaseToken(Random.Shared.Next(3, 10));
+
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithState(wrongLengthStateCode));
         Assert.Equal("state", ex.ParamName);
     }
 
@@ -139,59 +149,121 @@ public sealed class ChurchTests
     }
 
     [Fact]
-    public void Build_RequiredFieldNeverSet_Throws()
+    public void Build_CreatedAtCarriesNonZeroOffset_PreservesTheInstant()
     {
-        var builder = new ChurchBuilder()
-            .WithId(Guid.NewGuid())
-            .WithCanonicalName("Grace Church")
-            .WithSlug("grace-church")
-            .WithLatitude(0)
-            .WithLongitude(0)
-            .WithState("AZ")
-            .WithZip("85001")
-            .WithWorshipStyle(0)
-            .WithPrimaryLanguage("English")
-            .WithConfidenceScore(0.5m)
-            .WithCreatedAt(DateTime.UtcNow)
-            .WithUpdatedAt(DateTime.UtcNow);
+        var createdAtInSourceOffset = TestValues.NewTimestampWithNonZeroOffset();
 
-        var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
-        Assert.Contains("WithCity", ex.Message, StringComparison.Ordinal);
+        var church = Build(createdAt: createdAtInSourceOffset);
+
+        Assert.Equal(createdAtInSourceOffset.UtcDateTime, church.CreatedAt.UtcDateTime);
     }
 
-    private static Church ValidChurch() => Build();
-
-    private static Church Build(
-        Guid? id = null,
-        string canonicalName = "Grace Church",
-        string slug = "grace-church-phoenix-az",
-        double latitude = 33.4,
-        double longitude = -112.0,
-        string city = "Phoenix",
-        string state = "AZ",
-        string zip = "85001",
-        int worshipStyle = 0,
-        string primaryLanguage = "English",
-        decimal confidenceScore = 0.5m,
-        DateTime? createdAt = null,
-        DateTime? updatedAt = null)
+    [Fact]
+    public void Build_CreatedAtCarriesNonZeroOffset_PreservesTheOffset()
     {
-        var now = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        return new ChurchBuilder()
-            .WithId(id ?? Guid.NewGuid())
+        var createdAtInSourceOffset = TestValues.NewTimestampWithNonZeroOffset();
+
+        var church = Build(createdAt: createdAtInSourceOffset);
+
+        Assert.Equal(createdAtInSourceOffset.Offset, church.CreatedAt.Offset);
+    }
+
+    [Fact]
+    public void Build_LastVerifiedAtCarriesNonZeroOffset_PreservesTheInstant()
+    {
+        var lastVerifiedAtInSourceOffset = TestValues.NewTimestampWithNonZeroOffset();
+
+        var church = new ChurchBuilder()
+            .WithId(Guid.NewGuid())
+            .WithCanonicalName(TestValues.NewName())
+            .WithSlug(TestValues.NewSlug())
+            .WithLatitude(TestValues.NewLatitude())
+            .WithLongitude(TestValues.NewLongitude())
+            .WithCity(TestValues.NewCity())
+            .WithState(TestValues.NewStateCode())
+            .WithZip(TestValues.NewZip())
+            .WithWorshipStyle(TestValues.NewWorshipStyleCode())
+            .WithPrimaryLanguage(TestValues.NewLanguage())
+            .WithConfidenceScore(TestValues.NewConfidenceScore())
+            .WithLastVerifiedAt(lastVerifiedAtInSourceOffset)
+            .WithCreatedAt(TestValues.NewUtcTimestamp())
+            .WithUpdatedAt(TestValues.NewUtcTimestamp())
+            .Build();
+
+        Assert.Equal(lastVerifiedAtInSourceOffset.UtcDateTime, church.LastVerifiedAt?.UtcDateTime);
+    }
+
+    [Fact]
+    public void Build_UtcTimestamp_CarriesZeroOffset()
+    {
+        var createdAtInUtc = TestValues.NewUtcTimestamp();
+
+        var church = Build(createdAt: createdAtInUtc);
+
+        Assert.Equal(TimeSpan.Zero, church.CreatedAt.Offset);
+    }
+
+    [Fact]
+    public void Build_RequiredFieldNeverSet_Throws()
+    {
+        var churchId = Guid.NewGuid();
+        var canonicalName = TestValues.NewName();
+        var slug = TestValues.NewSlug();
+        var latitude = TestValues.NewLatitude();
+        var longitude = TestValues.NewLongitude();
+        var state = TestValues.NewStateCode();
+        var zip = TestValues.NewZip();
+        var worshipStyle = TestValues.NewWorshipStyleCode();
+        var primaryLanguage = TestValues.NewLanguage();
+        var confidenceScore = TestValues.NewConfidenceScore();
+        var createdAt = TestValues.NewUtcTimestamp();
+        var updatedAt = TestValues.NewUtcTimestamp();
+        var builder = new ChurchBuilder()
+            .WithId(churchId)
             .WithCanonicalName(canonicalName)
             .WithSlug(slug)
             .WithLatitude(latitude)
             .WithLongitude(longitude)
-            .WithStreet("123 Main St")
-            .WithCity(city)
             .WithState(state)
             .WithZip(zip)
             .WithWorshipStyle(worshipStyle)
             .WithPrimaryLanguage(primaryLanguage)
             .WithConfidenceScore(confidenceScore)
-            .WithCreatedAt(createdAt ?? now)
-            .WithUpdatedAt(updatedAt ?? now)
-            .Build();
+            .WithCreatedAt(createdAt)
+            .WithUpdatedAt(updatedAt);
+
+        var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
+        Assert.Contains("WithCity", ex.Message, StringComparison.Ordinal);
     }
+
+    private static Church Build(
+        Guid? id = null,
+        string? canonicalName = null,
+        string? slug = null,
+        double? latitude = null,
+        double? longitude = null,
+        string? city = null,
+        string? state = null,
+        string? zip = null,
+        int? worshipStyle = null,
+        string? primaryLanguage = null,
+        decimal? confidenceScore = null,
+        DateTimeOffset? createdAt = null,
+        DateTimeOffset? updatedAt = null) =>
+        new ChurchBuilder()
+            .WithId(id ?? Guid.NewGuid())
+            .WithCanonicalName(canonicalName ?? TestValues.NewName())
+            .WithSlug(slug ?? TestValues.NewSlug())
+            .WithLatitude(latitude ?? TestValues.NewLatitude())
+            .WithLongitude(longitude ?? TestValues.NewLongitude())
+            .WithStreet(TestValues.NewStreet())
+            .WithCity(city ?? TestValues.NewCity())
+            .WithState(state ?? TestValues.NewStateCode())
+            .WithZip(zip ?? TestValues.NewZip())
+            .WithWorshipStyle(worshipStyle ?? TestValues.NewWorshipStyleCode())
+            .WithPrimaryLanguage(primaryLanguage ?? TestValues.NewLanguage())
+            .WithConfidenceScore(confidenceScore ?? TestValues.NewConfidenceScore())
+            .WithCreatedAt(createdAt ?? TestValues.NewUtcTimestamp())
+            .WithUpdatedAt(updatedAt ?? TestValues.NewUtcTimestamp())
+            .Build();
 }

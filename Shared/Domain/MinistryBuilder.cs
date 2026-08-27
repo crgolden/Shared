@@ -6,8 +6,8 @@ public sealed class MinistryBuilder
     private Guid? _churchId;
     private string? _name;
     private string? _description;
-    private DateTime? _createdAt;
-    private DateTime? _updatedAt;
+    private DateTimeOffset? _createdAt;
+    private DateTimeOffset? _updatedAt;
 
     public MinistryBuilder WithId(Guid id)
     {
@@ -48,7 +48,7 @@ public sealed class MinistryBuilder
         return this;
     }
 
-    public MinistryBuilder WithCreatedAt(DateTime createdAt)
+    public MinistryBuilder WithCreatedAt(DateTimeOffset createdAt)
     {
         if (createdAt == default)
         {
@@ -59,7 +59,7 @@ public sealed class MinistryBuilder
         return this;
     }
 
-    public MinistryBuilder WithUpdatedAt(DateTime updatedAt)
+    public MinistryBuilder WithUpdatedAt(DateTimeOffset updatedAt)
     {
         if (updatedAt == default)
         {
@@ -70,45 +70,17 @@ public sealed class MinistryBuilder
         return this;
     }
 
-    public Ministry Build()
-    {
-        EnsureRequiredFieldsSet();
-        return new Ministry
+    public Ministry Build() =>
+        new Ministry
         {
-            Id = _id!.Value,
-            ChurchId = _churchId!.Value,
-            Name = _name!,
+            Id = _id ?? throw NotCalled(nameof(WithId)),
+            ChurchId = _churchId ?? throw NotCalled(nameof(WithChurchId)),
+            Name = _name ?? throw NotCalled(nameof(WithName)),
             Description = _description,
-            CreatedAt = _createdAt!.Value,
-            UpdatedAt = _updatedAt!.Value,
+            CreatedAt = _createdAt ?? throw NotCalled(nameof(WithCreatedAt)),
+            UpdatedAt = _updatedAt ?? throw NotCalled(nameof(WithUpdatedAt)),
         };
-    }
 
-    private void EnsureRequiredFieldsSet()
-    {
-        if (_id is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithId)} must be called before {nameof(Build)}.");
-        }
-
-        if (_churchId is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithChurchId)} must be called before {nameof(Build)}.");
-        }
-
-        if (_name is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithName)} must be called before {nameof(Build)}.");
-        }
-
-        if (_createdAt is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithCreatedAt)} must be called before {nameof(Build)}.");
-        }
-
-        if (_updatedAt is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithUpdatedAt)} must be called before {nameof(Build)}.");
-        }
-    }
+    private static InvalidOperationException NotCalled(string setterName) =>
+        new InvalidOperationException($"{setterName} must be called before {nameof(Build)}.");
 }

@@ -8,8 +8,8 @@ public sealed class ServiceScheduleBuilder
     private byte? _dayOfWeek;
     private TimeOnly? _startTime;
     private string? _description;
-    private DateTime? _createdAt;
-    private DateTime? _updatedAt;
+    private DateTimeOffset? _createdAt;
+    private DateTimeOffset? _updatedAt;
 
     public ServiceScheduleBuilder WithId(Guid id)
     {
@@ -62,7 +62,7 @@ public sealed class ServiceScheduleBuilder
         return this;
     }
 
-    public ServiceScheduleBuilder WithCreatedAt(DateTime createdAt)
+    public ServiceScheduleBuilder WithCreatedAt(DateTimeOffset createdAt)
     {
         if (createdAt == default)
         {
@@ -73,7 +73,7 @@ public sealed class ServiceScheduleBuilder
         return this;
     }
 
-    public ServiceScheduleBuilder WithUpdatedAt(DateTime updatedAt)
+    public ServiceScheduleBuilder WithUpdatedAt(DateTimeOffset updatedAt)
     {
         if (updatedAt == default)
         {
@@ -84,52 +84,19 @@ public sealed class ServiceScheduleBuilder
         return this;
     }
 
-    public ServiceSchedule Build()
-    {
-        EnsureRequiredFieldsSet();
-        return new ServiceSchedule
+    public ServiceSchedule Build() =>
+        new ServiceSchedule
         {
-            Id = _id!.Value,
-            ChurchId = _churchId!.Value,
+            Id = _id ?? throw NotCalled(nameof(WithId)),
+            ChurchId = _churchId ?? throw NotCalled(nameof(WithChurchId)),
             CampusId = _campusId,
-            DayOfWeek = _dayOfWeek!.Value,
-            StartTime = _startTime!.Value,
+            DayOfWeek = _dayOfWeek ?? throw NotCalled(nameof(WithDayOfWeek)),
+            StartTime = _startTime ?? throw NotCalled(nameof(WithStartTime)),
             Description = _description,
-            CreatedAt = _createdAt!.Value,
-            UpdatedAt = _updatedAt!.Value,
+            CreatedAt = _createdAt ?? throw NotCalled(nameof(WithCreatedAt)),
+            UpdatedAt = _updatedAt ?? throw NotCalled(nameof(WithUpdatedAt)),
         };
-    }
 
-    private void EnsureRequiredFieldsSet()
-    {
-        if (_id is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithId)} must be called before {nameof(Build)}.");
-        }
-
-        if (_churchId is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithChurchId)} must be called before {nameof(Build)}.");
-        }
-
-        if (_dayOfWeek is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithDayOfWeek)} must be called before {nameof(Build)}.");
-        }
-
-        if (_startTime is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithStartTime)} must be called before {nameof(Build)}.");
-        }
-
-        if (_createdAt is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithCreatedAt)} must be called before {nameof(Build)}.");
-        }
-
-        if (_updatedAt is null)
-        {
-            throw new InvalidOperationException($"{nameof(WithUpdatedAt)} must be called before {nameof(Build)}.");
-        }
-    }
+    private static InvalidOperationException NotCalled(string setterName) =>
+        new InvalidOperationException($"{setterName} must be called before {nameof(Build)}.");
 }
