@@ -5,6 +5,16 @@ using Shared.Domain;
 [Trait("Category", "Unit")]
 public sealed class ChurchTests
 {
+    private const double OutOfRangeCoordinateOffset = 1;
+
+    private const int OutOfRangeWorshipStyleOffset = 1;
+
+    public static TheoryData<decimal> OutOfRangeConfidenceScores() => new TheoryData<decimal>
+    {
+        ChurchBuilder.MinConfidenceScore - TestValues.NewOutOfRangeOffset(),
+        ChurchBuilder.MaxConfidenceScore + TestValues.NewOutOfRangeOffset(),
+    };
+
     [Fact]
     public void Build_AllValidInput_ReturnsChurch()
     {
@@ -30,81 +40,91 @@ public sealed class ChurchTests
     [Fact]
     public void WithCanonicalName_Blank_Throws()
     {
-        var blankCanonicalName = new string(' ', Random.Shared.Next(1, 4));
+        var canonicalName = TestValues.NewBlank();
 
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithCanonicalName(blankCanonicalName));
-        Assert.Equal("canonicalName", ex.ParamName);
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithCanonicalName(canonicalName));
+        Assert.Equal(nameof(canonicalName), ex.ParamName);
     }
 
     [Fact]
     public void WithSlug_Blank_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithSlug(string.Empty));
-        Assert.Equal("slug", ex.ParamName);
+        var slug = TestValues.NewBlank();
+
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithSlug(slug));
+        Assert.Equal(nameof(slug), ex.ParamName);
     }
 
     [Fact]
     public void WithCity_Null_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithCity(null!));
-        Assert.Equal("city", ex.ParamName);
+        string? city = null;
+
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithCity(city));
+        Assert.Equal(nameof(city), ex.ParamName);
     }
 
     [Fact]
     public void WithCity_Blank_Throws()
     {
-        var blankCity = new string(' ', Random.Shared.Next(1, 4));
+        var city = TestValues.NewBlank();
 
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithCity(blankCity));
-        Assert.Equal("city", ex.ParamName);
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithCity(city));
+        Assert.Equal(nameof(city), ex.ParamName);
     }
 
     [Fact]
     public void WithState_Null_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithState(null!));
-        Assert.Equal("state", ex.ParamName);
+        string? state = null;
+
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithState(state));
+        Assert.Equal(nameof(state), ex.ParamName);
     }
 
     [Fact]
     public void WithState_WrongLength_Throws()
     {
-        var wrongLengthStateCode = TestValues.LowercaseToken(Random.Shared.Next(3, 10));
+        var state = TestValues.NewWrongLengthStateCode();
 
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithState(wrongLengthStateCode));
-        Assert.Equal("state", ex.ParamName);
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithState(state));
+        Assert.Equal(nameof(state), ex.ParamName);
     }
 
     [Fact]
     public void WithZip_Blank_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithZip(string.Empty));
-        Assert.Equal("zip", ex.ParamName);
+        var zip = TestValues.NewBlank();
+
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithZip(zip));
+        Assert.Equal(nameof(zip), ex.ParamName);
     }
 
     [Fact]
     public void WithPrimaryLanguage_Blank_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithPrimaryLanguage(string.Empty));
-        Assert.Equal("primaryLanguage", ex.ParamName);
+        var primaryLanguage = TestValues.NewBlank();
+
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithPrimaryLanguage(primaryLanguage));
+        Assert.Equal(nameof(primaryLanguage), ex.ParamName);
     }
 
     [Theory]
-    [InlineData(-91.0)]
-    [InlineData(91.0)]
+    [InlineData(ChurchBuilder.MinLatitude - OutOfRangeCoordinateOffset)]
+    [InlineData(ChurchBuilder.MaxLatitude + OutOfRangeCoordinateOffset)]
     public void WithLatitude_OutOfRange_Throws(double latitude)
     {
         var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new ChurchBuilder().WithLatitude(latitude));
-        Assert.Equal("latitude", ex.ParamName);
+        Assert.Equal(nameof(latitude), ex.ParamName);
     }
 
     [Theory]
-    [InlineData(-181.0)]
-    [InlineData(181.0)]
+    [InlineData(ChurchBuilder.MinLongitude - OutOfRangeCoordinateOffset)]
+    [InlineData(ChurchBuilder.MaxLongitude + OutOfRangeCoordinateOffset)]
     public void WithLongitude_OutOfRange_Throws(double longitude)
     {
         var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new ChurchBuilder().WithLongitude(longitude));
-        Assert.Equal("longitude", ex.ParamName);
+        Assert.Equal(nameof(longitude), ex.ParamName);
     }
 
     [Fact]
@@ -117,35 +137,38 @@ public sealed class ChurchTests
     }
 
     [Theory]
-    [InlineData(-1)]
-    [InlineData(6)]
+    [InlineData(ChurchBuilder.MinWorshipStyle - OutOfRangeWorshipStyleOffset)]
+    [InlineData(ChurchBuilder.MaxWorshipStyle + OutOfRangeWorshipStyleOffset)]
     public void WithWorshipStyle_OutOfRange_Throws(int worshipStyle)
     {
         var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new ChurchBuilder().WithWorshipStyle(worshipStyle));
-        Assert.Equal("worshipStyle", ex.ParamName);
+        Assert.Equal(nameof(worshipStyle), ex.ParamName);
     }
 
     [Theory]
-    [InlineData(-0.0001)]
-    [InlineData(1.0001)]
+    [MemberData(nameof(OutOfRangeConfidenceScores))]
     public void WithConfidenceScore_OutOfRange_Throws(decimal confidenceScore)
     {
         var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new ChurchBuilder().WithConfidenceScore(confidenceScore));
-        Assert.Equal("confidenceScore", ex.ParamName);
+        Assert.Equal(nameof(confidenceScore), ex.ParamName);
     }
 
     [Fact]
     public void WithCreatedAt_Default_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithCreatedAt(default));
-        Assert.Equal("createdAt", ex.ParamName);
+        var createdAt = default(DateTimeOffset);
+
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithCreatedAt(createdAt));
+        Assert.Equal(nameof(createdAt), ex.ParamName);
     }
 
     [Fact]
     public void WithUpdatedAt_Default_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithUpdatedAt(default));
-        Assert.Equal("updatedAt", ex.ParamName);
+        var updatedAt = default(DateTimeOffset);
+
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithUpdatedAt(updatedAt));
+        Assert.Equal(nameof(updatedAt), ex.ParamName);
     }
 
     [Fact]
@@ -172,9 +195,10 @@ public sealed class ChurchTests
     public void Build_LastVerifiedAtCarriesNonZeroOffset_PreservesTheInstant()
     {
         var lastVerifiedAtInSourceOffset = TestValues.NewTimestampWithNonZeroOffset();
+        var churchId = Guid.NewGuid();
 
         var church = new ChurchBuilder()
-            .WithId(Guid.NewGuid())
+            .WithId(churchId)
             .WithCanonicalName(TestValues.NewName())
             .WithSlug(TestValues.NewSlug())
             .WithLatitude(TestValues.NewLatitude())
@@ -233,7 +257,7 @@ public sealed class ChurchTests
             .WithUpdatedAt(updatedAt);
 
         var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
-        Assert.Contains("WithCity", ex.Message, StringComparison.Ordinal);
+        Assert.Contains(nameof(ChurchBuilder.WithCity), ex.Message, StringComparison.Ordinal);
     }
 
     private static Church Build(
@@ -249,9 +273,12 @@ public sealed class ChurchTests
         string? primaryLanguage = null,
         decimal? confidenceScore = null,
         DateTimeOffset? createdAt = null,
-        DateTimeOffset? updatedAt = null) =>
-        new ChurchBuilder()
-            .WithId(id ?? Guid.NewGuid())
+        DateTimeOffset? updatedAt = null)
+    {
+        var generatedChurchId = Guid.NewGuid();
+
+        return new ChurchBuilder()
+            .WithId(id ?? generatedChurchId)
             .WithCanonicalName(canonicalName ?? TestValues.NewName())
             .WithSlug(slug ?? TestValues.NewSlug())
             .WithLatitude(latitude ?? TestValues.NewLatitude())
@@ -266,4 +293,5 @@ public sealed class ChurchTests
             .WithCreatedAt(createdAt ?? TestValues.NewUtcTimestamp())
             .WithUpdatedAt(updatedAt ?? TestValues.NewUtcTimestamp())
             .Build();
+    }
 }

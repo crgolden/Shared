@@ -2,6 +2,10 @@ namespace Shared.Domain;
 
 public sealed class ChurchAttributeBuilder
 {
+    public const decimal MinConfidence = 0m;
+
+    public const decimal MaxConfidence = 1m;
+
     private Guid? _id;
     private Guid? _churchId;
     private string? _key;
@@ -68,7 +72,7 @@ public sealed class ChurchAttributeBuilder
 
     public ChurchAttributeBuilder WithConfidence(decimal confidence)
     {
-        if (confidence is < 0m or > 1m)
+        if (confidence is < MinConfidence or > MaxConfidence)
         {
             throw new ArgumentOutOfRangeException(nameof(confidence), confidence, "Confidence must be between 0 and 1.");
         }

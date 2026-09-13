@@ -25,15 +25,19 @@ public sealed class MinistryTests
     [Fact]
     public void WithChurchId_Empty_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new MinistryBuilder().WithChurchId(Guid.Empty));
-        Assert.Equal("churchId", ex.ParamName);
+        var churchId = Guid.Empty;
+
+        var ex = Assert.Throws<ArgumentException>(() => new MinistryBuilder().WithChurchId(churchId));
+        Assert.Equal(nameof(churchId), ex.ParamName);
     }
 
     [Fact]
     public void WithName_Blank_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new MinistryBuilder().WithName(string.Empty));
-        Assert.Equal("name", ex.ParamName);
+        var name = TestValues.NewBlank();
+
+        var ex = Assert.Throws<ArgumentException>(() => new MinistryBuilder().WithName(name));
+        Assert.Equal(nameof(name), ex.ParamName);
     }
 
     [Fact]
@@ -60,15 +64,19 @@ public sealed class MinistryTests
     [Fact]
     public void WithCreatedAt_Default_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new MinistryBuilder().WithCreatedAt(default));
-        Assert.Equal("createdAt", ex.ParamName);
+        var createdAt = default(DateTimeOffset);
+
+        var ex = Assert.Throws<ArgumentException>(() => new MinistryBuilder().WithCreatedAt(createdAt));
+        Assert.Equal(nameof(createdAt), ex.ParamName);
     }
 
     [Fact]
     public void WithUpdatedAt_Default_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new MinistryBuilder().WithUpdatedAt(default));
-        Assert.Equal("updatedAt", ex.ParamName);
+        var updatedAt = default(DateTimeOffset);
+
+        var ex = Assert.Throws<ArgumentException>(() => new MinistryBuilder().WithUpdatedAt(updatedAt));
+        Assert.Equal(nameof(updatedAt), ex.ParamName);
     }
 
     [Fact]
@@ -85,7 +93,7 @@ public sealed class MinistryTests
             .WithUpdatedAt(updatedAt);
 
         var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
-        Assert.Contains("WithName", ex.Message, StringComparison.Ordinal);
+        Assert.Contains(nameof(MinistryBuilder.WithName), ex.Message, StringComparison.Ordinal);
     }
 
     private static Ministry Build(
@@ -93,13 +101,18 @@ public sealed class MinistryTests
         Guid? churchId = null,
         string? name = null,
         DateTimeOffset? createdAt = null,
-        DateTimeOffset? updatedAt = null) =>
-        new MinistryBuilder()
-            .WithId(id ?? Guid.NewGuid())
-            .WithChurchId(churchId ?? Guid.NewGuid())
+        DateTimeOffset? updatedAt = null)
+    {
+        var generatedMinistryId = Guid.NewGuid();
+        var generatedChurchId = Guid.NewGuid();
+
+        return new MinistryBuilder()
+            .WithId(id ?? generatedMinistryId)
+            .WithChurchId(churchId ?? generatedChurchId)
             .WithName(name ?? TestValues.NewName())
             .WithDescription(TestValues.NewDescription())
             .WithCreatedAt(createdAt ?? TestValues.NewUtcTimestamp())
             .WithUpdatedAt(updatedAt ?? TestValues.NewUtcTimestamp())
             .Build();
+    }
 }

@@ -2,6 +2,16 @@ namespace Shared.Domain;
 
 public sealed class CampusBuilder
 {
+    public const double MinLatitude = -90;
+
+    public const double MaxLatitude = 90;
+
+    public const double MinLongitude = -180;
+
+    public const double MaxLongitude = 180;
+
+    public const int StateCodeLength = 2;
+
     private Guid? _id;
     private Guid? _churchId;
     private string? _name;
@@ -53,7 +63,7 @@ public sealed class CampusBuilder
         return this;
     }
 
-    public CampusBuilder WithCity(string city)
+    public CampusBuilder WithCity(string? city)
     {
         if (string.IsNullOrWhiteSpace(city))
         {
@@ -66,7 +76,7 @@ public sealed class CampusBuilder
 
     public CampusBuilder WithState(string state)
     {
-        if (state is not { Length: 2 })
+        if (state is not { Length: StateCodeLength })
         {
             throw new ArgumentException("State must be a 2-letter code.", nameof(state));
         }
@@ -88,7 +98,7 @@ public sealed class CampusBuilder
 
     public CampusBuilder WithLatitude(double latitude)
     {
-        if (latitude is < -90 or > 90)
+        if (latitude is < MinLatitude or > MaxLatitude)
         {
             throw new ArgumentOutOfRangeException(nameof(latitude), latitude, "Latitude must be between -90 and 90.");
         }
@@ -99,7 +109,7 @@ public sealed class CampusBuilder
 
     public CampusBuilder WithLongitude(double longitude)
     {
-        if (longitude is < -180 or > 180)
+        if (longitude is < MinLongitude or > MaxLongitude)
         {
             throw new ArgumentOutOfRangeException(nameof(longitude), longitude, "Longitude must be between -180 and 180.");
         }

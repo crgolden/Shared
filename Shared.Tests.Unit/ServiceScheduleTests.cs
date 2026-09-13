@@ -5,6 +5,8 @@ using Shared.Domain;
 [Trait("Category", "Unit")]
 public sealed class ServiceScheduleTests
 {
+    private const byte OutOfRangeDayOfWeekOffset = 1;
+
     [Fact]
     public void Build_AllValidInput_ReturnsServiceSchedule()
     {
@@ -27,8 +29,10 @@ public sealed class ServiceScheduleTests
     [Fact]
     public void WithChurchId_Empty_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new ServiceScheduleBuilder().WithChurchId(Guid.Empty));
-        Assert.Equal("churchId", ex.ParamName);
+        var churchId = Guid.Empty;
+
+        var ex = Assert.Throws<ArgumentException>(() => new ServiceScheduleBuilder().WithChurchId(churchId));
+        Assert.Equal(nameof(churchId), ex.ParamName);
     }
 
     [Fact]
@@ -42,22 +46,28 @@ public sealed class ServiceScheduleTests
     [Fact]
     public void WithDayOfWeek_AboveSix_Throws()
     {
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new ServiceScheduleBuilder().WithDayOfWeek(7));
-        Assert.Equal("dayOfWeek", ex.ParamName);
+        const byte dayOfWeek = ServiceScheduleBuilder.MaxDayOfWeek + OutOfRangeDayOfWeekOffset;
+
+        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new ServiceScheduleBuilder().WithDayOfWeek(dayOfWeek));
+        Assert.Equal(nameof(dayOfWeek), ex.ParamName);
     }
 
     [Fact]
     public void WithCreatedAt_Default_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new ServiceScheduleBuilder().WithCreatedAt(default));
-        Assert.Equal("createdAt", ex.ParamName);
+        var createdAt = default(DateTimeOffset);
+
+        var ex = Assert.Throws<ArgumentException>(() => new ServiceScheduleBuilder().WithCreatedAt(createdAt));
+        Assert.Equal(nameof(createdAt), ex.ParamName);
     }
 
     [Fact]
     public void WithUpdatedAt_Default_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new ServiceScheduleBuilder().WithUpdatedAt(default));
-        Assert.Equal("updatedAt", ex.ParamName);
+        var updatedAt = default(DateTimeOffset);
+
+        var ex = Assert.Throws<ArgumentException>(() => new ServiceScheduleBuilder().WithUpdatedAt(updatedAt));
+        Assert.Equal(nameof(updatedAt), ex.ParamName);
     }
 
     [Fact]
@@ -76,7 +86,7 @@ public sealed class ServiceScheduleTests
             .WithUpdatedAt(updatedAt);
 
         var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
-        Assert.Contains("WithStartTime", ex.Message, StringComparison.Ordinal);
+        Assert.Contains(nameof(ServiceScheduleBuilder.WithStartTime), ex.Message, StringComparison.Ordinal);
     }
 
     private static ServiceSchedule Build(
@@ -86,10 +96,14 @@ public sealed class ServiceScheduleTests
         byte? dayOfWeek = null,
         TimeOnly? startTime = null,
         DateTimeOffset? createdAt = null,
-        DateTimeOffset? updatedAt = null) =>
-        new ServiceScheduleBuilder()
-            .WithId(id ?? Guid.NewGuid())
-            .WithChurchId(churchId ?? Guid.NewGuid())
+        DateTimeOffset? updatedAt = null)
+    {
+        var generatedScheduleId = Guid.NewGuid();
+        var generatedChurchId = Guid.NewGuid();
+
+        return new ServiceScheduleBuilder()
+            .WithId(id ?? generatedScheduleId)
+            .WithChurchId(churchId ?? generatedChurchId)
             .WithCampusId(campusId)
             .WithDayOfWeek(dayOfWeek ?? TestValues.NewDayOfWeek())
             .WithStartTime(startTime ?? TestValues.NewTimeOfDay())
@@ -97,4 +111,5 @@ public sealed class ServiceScheduleTests
             .WithCreatedAt(createdAt ?? TestValues.NewUtcTimestamp())
             .WithUpdatedAt(updatedAt ?? TestValues.NewUtcTimestamp())
             .Build();
+    }
 }

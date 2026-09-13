@@ -2,6 +2,8 @@ namespace Shared.Domain;
 
 public sealed class ServiceScheduleBuilder
 {
+    public const byte MaxDayOfWeek = 6;
+
     private Guid? _id;
     private Guid? _churchId;
     private Guid? _campusId;
@@ -41,7 +43,7 @@ public sealed class ServiceScheduleBuilder
 
     public ServiceScheduleBuilder WithDayOfWeek(byte dayOfWeek)
     {
-        if (dayOfWeek > 6)
+        if (dayOfWeek > MaxDayOfWeek)
         {
             throw new ArgumentOutOfRangeException(nameof(dayOfWeek), dayOfWeek, "DayOfWeek must be 0 (Sunday) through 6 (Saturday).");
         }

@@ -5,6 +5,8 @@ using Shared.Domain;
 [Trait("Category", "Unit")]
 public sealed class CampusTests
 {
+    private const double OutOfRangeCoordinateOffset = 1;
+
     [Fact]
     public void Build_AllValidInput_ReturnsCampus()
     {
@@ -27,72 +29,82 @@ public sealed class CampusTests
     [Fact]
     public void WithChurchId_Empty_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithChurchId(Guid.Empty));
-        Assert.Equal("churchId", ex.ParamName);
+        var churchId = Guid.Empty;
+
+        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithChurchId(churchId));
+        Assert.Equal(nameof(churchId), ex.ParamName);
     }
 
     [Fact]
     public void WithName_Blank_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithName(string.Empty));
-        Assert.Equal("name", ex.ParamName);
+        var name = TestValues.NewBlank();
+
+        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithName(name));
+        Assert.Equal(nameof(name), ex.ParamName);
     }
 
     [Fact]
     public void WithCity_Null_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithCity(null!));
-        Assert.Equal("city", ex.ParamName);
+        string? city = null;
+
+        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithCity(city));
+        Assert.Equal(nameof(city), ex.ParamName);
     }
 
     [Fact]
     public void WithState_WrongLength_Throws()
     {
-        var wrongLengthStateCode = TestValues.LowercaseToken(Random.Shared.Next(3, 10));
+        var state = TestValues.NewWrongLengthStateCode();
 
-        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithState(wrongLengthStateCode));
-        Assert.Equal("state", ex.ParamName);
+        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithState(state));
+        Assert.Equal(nameof(state), ex.ParamName);
     }
 
     [Fact]
     public void WithZip_Blank_Throws()
     {
-        var blankZip = new string(' ', Random.Shared.Next(1, 4));
+        var zip = TestValues.NewBlank();
 
-        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithZip(blankZip));
-        Assert.Equal("zip", ex.ParamName);
+        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithZip(zip));
+        Assert.Equal(nameof(zip), ex.ParamName);
     }
 
     [Theory]
-    [InlineData(-91.0)]
-    [InlineData(91.0)]
+    [InlineData(CampusBuilder.MinLatitude - OutOfRangeCoordinateOffset)]
+    [InlineData(CampusBuilder.MaxLatitude + OutOfRangeCoordinateOffset)]
     public void WithLatitude_OutOfRange_Throws(double latitude)
     {
         var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new CampusBuilder().WithLatitude(latitude));
-        Assert.Equal("latitude", ex.ParamName);
+        Assert.Equal(nameof(latitude), ex.ParamName);
     }
 
     [Theory]
-    [InlineData(-181.0)]
-    [InlineData(181.0)]
+    [InlineData(CampusBuilder.MinLongitude - OutOfRangeCoordinateOffset)]
+    [InlineData(CampusBuilder.MaxLongitude + OutOfRangeCoordinateOffset)]
     public void WithLongitude_OutOfRange_Throws(double longitude)
     {
         var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new CampusBuilder().WithLongitude(longitude));
-        Assert.Equal("longitude", ex.ParamName);
+        Assert.Equal(nameof(longitude), ex.ParamName);
     }
 
     [Fact]
     public void WithCreatedAt_Default_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithCreatedAt(default));
-        Assert.Equal("createdAt", ex.ParamName);
+        var createdAt = default(DateTimeOffset);
+
+        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithCreatedAt(createdAt));
+        Assert.Equal(nameof(createdAt), ex.ParamName);
     }
 
     [Fact]
     public void WithUpdatedAt_Default_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithUpdatedAt(default));
-        Assert.Equal("updatedAt", ex.ParamName);
+        var updatedAt = default(DateTimeOffset);
+
+        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithUpdatedAt(updatedAt));
+        Assert.Equal(nameof(updatedAt), ex.ParamName);
     }
 
     [Fact]
@@ -119,7 +131,7 @@ public sealed class CampusTests
             .WithUpdatedAt(updatedAt);
 
         var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
-        Assert.Contains("WithCity", ex.Message, StringComparison.Ordinal);
+        Assert.Contains(nameof(CampusBuilder.WithCity), ex.Message, StringComparison.Ordinal);
     }
 
     private static Campus Build(
@@ -132,10 +144,14 @@ public sealed class CampusTests
         double? latitude = null,
         double? longitude = null,
         DateTimeOffset? createdAt = null,
-        DateTimeOffset? updatedAt = null) =>
-        new CampusBuilder()
-            .WithId(id ?? Guid.NewGuid())
-            .WithChurchId(churchId ?? Guid.NewGuid())
+        DateTimeOffset? updatedAt = null)
+    {
+        var generatedCampusId = Guid.NewGuid();
+        var generatedChurchId = Guid.NewGuid();
+
+        return new CampusBuilder()
+            .WithId(id ?? generatedCampusId)
+            .WithChurchId(churchId ?? generatedChurchId)
             .WithName(name ?? TestValues.NewName())
             .WithStreet(TestValues.NewStreet())
             .WithCity(city ?? TestValues.NewCity())
@@ -146,4 +162,5 @@ public sealed class CampusTests
             .WithCreatedAt(createdAt ?? TestValues.NewUtcTimestamp())
             .WithUpdatedAt(updatedAt ?? TestValues.NewUtcTimestamp())
             .Build();
+    }
 }

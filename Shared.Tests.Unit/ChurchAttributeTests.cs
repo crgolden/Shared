@@ -5,10 +5,16 @@ using Shared.Domain;
 [Trait("Category", "Unit")]
 public sealed class ChurchAttributeTests
 {
+    public static TheoryData<decimal> OutOfRangeConfidences() => new TheoryData<decimal>
+    {
+        ChurchAttributeBuilder.MinConfidence - TestValues.NewOutOfRangeOffset(),
+        ChurchAttributeBuilder.MaxConfidence + TestValues.NewOutOfRangeOffset(),
+    };
+
     [Fact]
     public void Build_AllValidInput_ReturnsChurchAttribute()
     {
-        var attributeKey = TestValues.LowercaseToken(11);
+        var attributeKey = TestValues.NewAttributeKey();
         var attributeValue = TestValues.NewName();
 
         var attribute = Build(key: attributeKey, value: attributeValue);
@@ -27,21 +33,25 @@ public sealed class ChurchAttributeTests
     [Fact]
     public void WithChurchId_Empty_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithChurchId(Guid.Empty));
-        Assert.Equal("churchId", ex.ParamName);
+        var churchId = Guid.Empty;
+
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithChurchId(churchId));
+        Assert.Equal(nameof(churchId), ex.ParamName);
     }
 
     [Fact]
     public void WithKey_Blank_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithKey(string.Empty));
-        Assert.Equal("key", ex.ParamName);
+        var key = TestValues.NewBlank();
+
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithKey(key));
+        Assert.Equal(nameof(key), ex.ParamName);
     }
 
     [Fact]
     public void WithValue_Blank_Throws()
     {
-        var blankValue = new string(' ', Random.Shared.Next(1, 4));
+        var blankValue = TestValues.NewBlank();
 
         var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithValue(blankValue));
         Assert.Equal("value", ex.ParamName);
@@ -50,31 +60,36 @@ public sealed class ChurchAttributeTests
     [Fact]
     public void WithSource_Blank_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithSource(string.Empty));
-        Assert.Equal("source", ex.ParamName);
+        var source = TestValues.NewBlank();
+
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithSource(source));
+        Assert.Equal(nameof(source), ex.ParamName);
     }
 
     [Theory]
-    [InlineData(-0.0001)]
-    [InlineData(1.0001)]
+    [MemberData(nameof(OutOfRangeConfidences))]
     public void WithConfidence_OutOfRange_Throws(decimal confidence)
     {
         var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new ChurchAttributeBuilder().WithConfidence(confidence));
-        Assert.Equal("confidence", ex.ParamName);
+        Assert.Equal(nameof(confidence), ex.ParamName);
     }
 
     [Fact]
     public void WithCreatedAt_Default_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithCreatedAt(default));
-        Assert.Equal("createdAt", ex.ParamName);
+        var createdAt = default(DateTimeOffset);
+
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithCreatedAt(createdAt));
+        Assert.Equal(nameof(createdAt), ex.ParamName);
     }
 
     [Fact]
     public void WithUpdatedAt_Default_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithUpdatedAt(default));
-        Assert.Equal("updatedAt", ex.ParamName);
+        var updatedAt = default(DateTimeOffset);
+
+        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithUpdatedAt(updatedAt));
+        Assert.Equal(nameof(updatedAt), ex.ParamName);
     }
 
     [Fact]
@@ -82,7 +97,7 @@ public sealed class ChurchAttributeTests
     {
         var attributeId = Guid.NewGuid();
         var churchId = Guid.NewGuid();
-        var attributeKey = TestValues.LowercaseToken(11);
+        var attributeKey = TestValues.NewAttributeKey();
         var attributeValue = TestValues.NewName();
         var confidence = TestValues.NewConfidenceScore();
         var createdAt = TestValues.NewUtcTimestamp();
@@ -97,7 +112,7 @@ public sealed class ChurchAttributeTests
             .WithUpdatedAt(updatedAt);
 
         var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
-        Assert.Contains("WithSource", ex.Message, StringComparison.Ordinal);
+        Assert.Contains(nameof(ChurchAttributeBuilder.WithSource), ex.Message, StringComparison.Ordinal);
     }
 
     private static ChurchAttribute Build(
@@ -108,15 +123,20 @@ public sealed class ChurchAttributeTests
         string? source = null,
         decimal? confidence = null,
         DateTimeOffset? createdAt = null,
-        DateTimeOffset? updatedAt = null) =>
-        new ChurchAttributeBuilder()
-            .WithId(id ?? Guid.NewGuid())
-            .WithChurchId(churchId ?? Guid.NewGuid())
-            .WithKey(key ?? TestValues.LowercaseToken(11))
+        DateTimeOffset? updatedAt = null)
+    {
+        var generatedAttributeId = Guid.NewGuid();
+        var generatedChurchId = Guid.NewGuid();
+
+        return new ChurchAttributeBuilder()
+            .WithId(id ?? generatedAttributeId)
+            .WithChurchId(churchId ?? generatedChurchId)
+            .WithKey(key ?? TestValues.NewAttributeKey())
             .WithValue(value ?? TestValues.NewName())
-            .WithSource(source ?? TestValues.LowercaseToken(10))
+            .WithSource(source ?? TestValues.NewAttributeSource())
             .WithConfidence(confidence ?? TestValues.NewConfidenceScore())
             .WithCreatedAt(createdAt ?? TestValues.NewUtcTimestamp())
             .WithUpdatedAt(updatedAt ?? TestValues.NewUtcTimestamp())
             .Build();
+    }
 }
