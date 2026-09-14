@@ -1,6 +1,7 @@
 namespace Shared.Tests.Unit;
 
 using System.Globalization;
+using Shared.Domain;
 
 internal static class TestValues
 {
@@ -15,10 +16,29 @@ internal static class TestValues
 
     internal static string NewCity() => LowercaseToken(9);
 
-    internal static string NewStateCode() =>
-        $"{(char)Random.Shared.Next('A', 'Z' + 1)}{(char)Random.Shared.Next('A', 'Z' + 1)}";
+    internal static StateCode NewStateCode()
+    {
+        var defined = Enum.GetValues<StateCode>();
+        return defined[Random.Shared.Next(defined.Length)];
+    }
 
-    internal static string NewWrongLengthStateCode() => LowercaseToken(Random.Shared.Next(3, 10));
+    internal static StateCode NewUndefinedStateCode() =>
+        (StateCode)(Enum.GetValues<StateCode>().Max(code => (int)code) + Random.Shared.Next(1, 100));
+
+    internal static string NewUnparseableStateCode() => LowercaseToken(Random.Shared.Next(3, 10));
+
+    internal static string NewNonUspsLetterPair()
+    {
+        var defined = Enum.GetNames<StateCode>();
+        string pair;
+        do
+        {
+            pair = $"{(char)Random.Shared.Next('A', 'Z' + 1)}{(char)Random.Shared.Next('A', 'Z' + 1)}";
+        }
+        while (defined.Contains(pair, StringComparer.OrdinalIgnoreCase));
+
+        return pair;
+    }
 
     internal static string NewZip() => Random.Shared.Next(10000, 100000).ToString(CultureInfo.InvariantCulture);
 

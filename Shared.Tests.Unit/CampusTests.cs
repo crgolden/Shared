@@ -12,11 +12,13 @@ public sealed class CampusTests
     {
         var campusName = TestValues.NewName();
         var campusCity = TestValues.NewCity();
+        var campusState = TestValues.NewStateCode();
 
-        var campus = Build(name: campusName, city: campusCity);
+        var campus = Build(name: campusName, city: campusCity, state: campusState);
 
         Assert.Equal(campusName, campus.Name);
         Assert.Equal(campusCity, campus.City);
+        Assert.Equal(campusState, campus.State);
     }
 
     [Fact]
@@ -54,11 +56,11 @@ public sealed class CampusTests
     }
 
     [Fact]
-    public void WithState_WrongLength_Throws()
+    public void WithState_UndefinedCode_Throws()
     {
-        var state = TestValues.NewWrongLengthStateCode();
+        var state = TestValues.NewUndefinedStateCode();
 
-        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithState(state));
+        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new CampusBuilder().WithState(state));
         Assert.Equal(nameof(state), ex.ParamName);
     }
 
@@ -139,7 +141,7 @@ public sealed class CampusTests
         Guid? churchId = null,
         string? name = null,
         string? city = null,
-        string? state = null,
+        StateCode? state = null,
         string? zip = null,
         double? latitude = null,
         double? longitude = null,

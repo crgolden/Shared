@@ -74,20 +74,11 @@ public sealed class ChurchTests
     }
 
     [Fact]
-    public void WithState_Null_Throws()
+    public void WithState_UndefinedCode_Throws()
     {
-        string? state = null;
+        var state = TestValues.NewUndefinedStateCode();
 
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithState(state));
-        Assert.Equal(nameof(state), ex.ParamName);
-    }
-
-    [Fact]
-    public void WithState_WrongLength_Throws()
-    {
-        var state = TestValues.NewWrongLengthStateCode();
-
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithState(state));
+        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new ChurchBuilder().WithState(state));
         Assert.Equal(nameof(state), ex.ParamName);
     }
 
@@ -267,7 +258,7 @@ public sealed class ChurchTests
         double? latitude = null,
         double? longitude = null,
         string? city = null,
-        string? state = null,
+        StateCode? state = null,
         string? zip = null,
         int? worshipStyle = null,
         string? primaryLanguage = null,

@@ -16,7 +16,7 @@ public sealed class Campus
 
     required public string City { get; init; }
 
-    required public string State { get; init; }
+    required public StateCode State { get; init; }
 
     required public string Zip { get; init; }
 

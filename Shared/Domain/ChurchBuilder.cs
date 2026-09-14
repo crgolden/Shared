@@ -18,8 +18,6 @@ public sealed class ChurchBuilder
 
     public const decimal MaxConfidenceScore = 1m;
 
-    public const int StateCodeLength = 2;
-
     private Guid? _id;
     private string? _canonicalName;
     private string? _slug;
@@ -27,7 +25,7 @@ public sealed class ChurchBuilder
     private double? _longitude;
     private string? _street;
     private string? _city;
-    private string? _state;
+    private StateCode? _state;
     private string? _zip;
     private string? _phoneNumber;
     private string? _website;
@@ -117,11 +115,11 @@ public sealed class ChurchBuilder
         return this;
     }
 
-    public ChurchBuilder WithState(string? state)
+    public ChurchBuilder WithState(StateCode state)
     {
-        if (state is not { Length: StateCodeLength })
+        if (!Enum.IsDefined(state))
         {
-            throw new ArgumentException("State must be a 2-letter code.", nameof(state));
+            throw new ArgumentOutOfRangeException(nameof(state), state, "State must be a USPS state code.");
         }
 
         _state = state;

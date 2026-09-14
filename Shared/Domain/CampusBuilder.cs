@@ -10,14 +10,12 @@ public sealed class CampusBuilder
 
     public const double MaxLongitude = 180;
 
-    public const int StateCodeLength = 2;
-
     private Guid? _id;
     private Guid? _churchId;
     private string? _name;
     private string? _street;
     private string? _city;
-    private string? _state;
+    private StateCode? _state;
     private string? _zip;
     private double? _latitude;
     private double? _longitude;
@@ -74,11 +72,11 @@ public sealed class CampusBuilder
         return this;
     }
 
-    public CampusBuilder WithState(string state)
+    public CampusBuilder WithState(StateCode state)
     {
-        if (state is not { Length: StateCodeLength })
+        if (!Enum.IsDefined(state))
         {
-            throw new ArgumentException("State must be a 2-letter code.", nameof(state));
+            throw new ArgumentOutOfRangeException(nameof(state), state, "State must be a USPS state code.");
         }
 
         _state = state;

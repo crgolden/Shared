@@ -651,6 +651,7 @@ dotnet_diagnostic.SA0001.severity = none
 # XML doc is not used in this codebase (AGENTS/COMMENTS.md) — disable the full SA16xx doc-completeness
 # family rather than let it fire on doc-comment fragments/partial doc left by removal.
 dotnet_diagnostic.sa1601.severity = none
+dotnet_diagnostic.sa1602.severity = none
 dotnet_diagnostic.sa1603.severity = none
 dotnet_diagnostic.sa1604.severity = none
 dotnet_diagnostic.sa1605.severity = none
