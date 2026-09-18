@@ -18,12 +18,15 @@ public sealed class ChurchTests
     [Fact]
     public void Build_AllValidInput_ReturnsChurch()
     {
+        // Arrange
         var canonicalName = TestValues.NewName();
         var city = TestValues.NewCity();
         var state = TestValues.NewStateCode();
 
+        // Act
         var church = Build(canonicalName: canonicalName, city: city, state: state);
 
+        // Assert
         Assert.Equal(canonicalName, church.CanonicalName);
         Assert.Equal(city, church.City);
         Assert.Equal(state, church.State);
@@ -33,8 +36,15 @@ public sealed class ChurchTests
     [Fact]
     public void WithId_Empty_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithId(Guid.Empty));
-        Assert.Equal("id", ex.ParamName);
+        // Arrange
+        var id = Guid.Empty;
+
+        // Act
+        var exception = Record.Exception(() => new ChurchBuilder().WithId(id));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
+        Assert.Equal(nameof(id), ex.ParamName);
     }
 
     [Fact]
@@ -42,7 +52,11 @@ public sealed class ChurchTests
     {
         var canonicalName = TestValues.NewBlank();
 
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithCanonicalName(canonicalName));
+        // Act
+        var exception = Record.Exception(() => new ChurchBuilder().WithCanonicalName(canonicalName));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
         Assert.Equal(nameof(canonicalName), ex.ParamName);
     }
 
@@ -51,7 +65,11 @@ public sealed class ChurchTests
     {
         var slug = TestValues.NewBlank();
 
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithSlug(slug));
+        // Act
+        var exception = Record.Exception(() => new ChurchBuilder().WithSlug(slug));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
         Assert.Equal(nameof(slug), ex.ParamName);
     }
 
@@ -60,7 +78,11 @@ public sealed class ChurchTests
     {
         string? city = null;
 
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithCity(city));
+        // Act
+        var exception = Record.Exception(() => new ChurchBuilder().WithCity(city));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
         Assert.Equal(nameof(city), ex.ParamName);
     }
 
@@ -69,7 +91,11 @@ public sealed class ChurchTests
     {
         var city = TestValues.NewBlank();
 
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithCity(city));
+        // Act
+        var exception = Record.Exception(() => new ChurchBuilder().WithCity(city));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
         Assert.Equal(nameof(city), ex.ParamName);
     }
 
@@ -78,7 +104,11 @@ public sealed class ChurchTests
     {
         var state = TestValues.NewUndefinedStateCode();
 
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new ChurchBuilder().WithState(state));
+        // Act
+        var exception = Record.Exception(() => new ChurchBuilder().WithState(state));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentOutOfRangeException>(exception);
         Assert.Equal(nameof(state), ex.ParamName);
     }
 
@@ -87,7 +117,11 @@ public sealed class ChurchTests
     {
         var zip = TestValues.NewBlank();
 
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithZip(zip));
+        // Act
+        var exception = Record.Exception(() => new ChurchBuilder().WithZip(zip));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
         Assert.Equal(nameof(zip), ex.ParamName);
     }
 
@@ -96,7 +130,11 @@ public sealed class ChurchTests
     {
         var primaryLanguage = TestValues.NewBlank();
 
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithPrimaryLanguage(primaryLanguage));
+        // Act
+        var exception = Record.Exception(() => new ChurchBuilder().WithPrimaryLanguage(primaryLanguage));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
         Assert.Equal(nameof(primaryLanguage), ex.ParamName);
     }
 
@@ -105,7 +143,11 @@ public sealed class ChurchTests
     [InlineData(ChurchBuilder.MaxLatitude + OutOfRangeCoordinateOffset)]
     public void WithLatitude_OutOfRange_Throws(double latitude)
     {
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new ChurchBuilder().WithLatitude(latitude));
+        // Act
+        var exception = Record.Exception(() => new ChurchBuilder().WithLatitude(latitude));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentOutOfRangeException>(exception);
         Assert.Equal(nameof(latitude), ex.ParamName);
     }
 
@@ -114,15 +156,21 @@ public sealed class ChurchTests
     [InlineData(ChurchBuilder.MaxLongitude + OutOfRangeCoordinateOffset)]
     public void WithLongitude_OutOfRange_Throws(double longitude)
     {
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new ChurchBuilder().WithLongitude(longitude));
+        // Act
+        var exception = Record.Exception(() => new ChurchBuilder().WithLongitude(longitude));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentOutOfRangeException>(exception);
         Assert.Equal(nameof(longitude), ex.ParamName);
     }
 
     [Fact]
     public void Build_ZeroZeroCoordinates_IsAllowed()
     {
+        // Act
         var church = Build(latitude: 0, longitude: 0);
 
+        // Assert
         Assert.Equal(0, church.Latitude);
         Assert.Equal(0, church.Longitude);
     }
@@ -132,7 +180,11 @@ public sealed class ChurchTests
     [InlineData(ChurchBuilder.MaxWorshipStyle + OutOfRangeWorshipStyleOffset)]
     public void WithWorshipStyle_OutOfRange_Throws(int worshipStyle)
     {
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new ChurchBuilder().WithWorshipStyle(worshipStyle));
+        // Act
+        var exception = Record.Exception(() => new ChurchBuilder().WithWorshipStyle(worshipStyle));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentOutOfRangeException>(exception);
         Assert.Equal(nameof(worshipStyle), ex.ParamName);
     }
 
@@ -140,7 +192,11 @@ public sealed class ChurchTests
     [MemberData(nameof(OutOfRangeConfidenceScores))]
     public void WithConfidenceScore_OutOfRange_Throws(decimal confidenceScore)
     {
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new ChurchBuilder().WithConfidenceScore(confidenceScore));
+        // Act
+        var exception = Record.Exception(() => new ChurchBuilder().WithConfidenceScore(confidenceScore));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentOutOfRangeException>(exception);
         Assert.Equal(nameof(confidenceScore), ex.ParamName);
     }
 
@@ -149,7 +205,11 @@ public sealed class ChurchTests
     {
         var createdAt = default(DateTimeOffset);
 
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithCreatedAt(createdAt));
+        // Act
+        var exception = Record.Exception(() => new ChurchBuilder().WithCreatedAt(createdAt));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
         Assert.Equal(nameof(createdAt), ex.ParamName);
     }
 
@@ -158,36 +218,48 @@ public sealed class ChurchTests
     {
         var updatedAt = default(DateTimeOffset);
 
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchBuilder().WithUpdatedAt(updatedAt));
+        // Act
+        var exception = Record.Exception(() => new ChurchBuilder().WithUpdatedAt(updatedAt));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
         Assert.Equal(nameof(updatedAt), ex.ParamName);
     }
 
     [Fact]
     public void Build_CreatedAtCarriesNonZeroOffset_PreservesTheInstant()
     {
+        // Arrange
         var createdAtInSourceOffset = TestValues.NewTimestampWithNonZeroOffset();
 
+        // Act
         var church = Build(createdAt: createdAtInSourceOffset);
 
+        // Assert
         Assert.Equal(createdAtInSourceOffset.UtcDateTime, church.CreatedAt.UtcDateTime);
     }
 
     [Fact]
     public void Build_CreatedAtCarriesNonZeroOffset_PreservesTheOffset()
     {
+        // Arrange
         var createdAtInSourceOffset = TestValues.NewTimestampWithNonZeroOffset();
 
+        // Act
         var church = Build(createdAt: createdAtInSourceOffset);
 
+        // Assert
         Assert.Equal(createdAtInSourceOffset.Offset, church.CreatedAt.Offset);
     }
 
     [Fact]
     public void Build_LastVerifiedAtCarriesNonZeroOffset_PreservesTheInstant()
     {
+        // Arrange
         var lastVerifiedAtInSourceOffset = TestValues.NewTimestampWithNonZeroOffset();
         var churchId = Guid.NewGuid();
 
+        // Act
         var church = new ChurchBuilder()
             .WithId(churchId)
             .WithCanonicalName(TestValues.NewName())
@@ -205,22 +277,27 @@ public sealed class ChurchTests
             .WithUpdatedAt(TestValues.NewUtcTimestamp())
             .Build();
 
+        // Assert
         Assert.Equal(lastVerifiedAtInSourceOffset.UtcDateTime, church.LastVerifiedAt?.UtcDateTime);
     }
 
     [Fact]
     public void Build_UtcTimestamp_CarriesZeroOffset()
     {
+        // Arrange
         var createdAtInUtc = TestValues.NewUtcTimestamp();
 
+        // Act
         var church = Build(createdAt: createdAtInUtc);
 
+        // Assert
         Assert.Equal(TimeSpan.Zero, church.CreatedAt.Offset);
     }
 
     [Fact]
     public void Build_RequiredFieldNeverSet_Throws()
     {
+        // Arrange
         var churchId = Guid.NewGuid();
         var canonicalName = TestValues.NewName();
         var slug = TestValues.NewSlug();
@@ -247,7 +324,11 @@ public sealed class ChurchTests
             .WithCreatedAt(createdAt)
             .WithUpdatedAt(updatedAt);
 
-        var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
+        // Act
+        var exception = Record.Exception(() => builder.Build());
+
+        // Assert
+        var ex = Assert.IsType<InvalidOperationException>(exception);
         Assert.Contains(nameof(ChurchBuilder.WithCity), ex.Message, StringComparison.Ordinal);
     }
 

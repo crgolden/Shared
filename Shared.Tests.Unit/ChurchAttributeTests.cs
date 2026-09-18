@@ -14,11 +14,14 @@ public sealed class ChurchAttributeTests
     [Fact]
     public void Build_AllValidInput_ReturnsChurchAttribute()
     {
+        // Arrange
         var attributeKey = TestValues.NewAttributeKey();
         var attributeValue = TestValues.NewName();
 
+        // Act
         var attribute = Build(key: attributeKey, value: attributeValue);
 
+        // Assert
         Assert.Equal(attributeKey, attribute.Key);
         Assert.Equal(attributeValue, attribute.Value);
     }
@@ -26,43 +29,70 @@ public sealed class ChurchAttributeTests
     [Fact]
     public void WithId_Empty_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithId(Guid.Empty));
-        Assert.Equal("id", ex.ParamName);
+        // Arrange
+        var id = Guid.Empty;
+
+        // Act
+        var exception = Record.Exception(() => new ChurchAttributeBuilder().WithId(id));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
+        Assert.Equal(nameof(id), ex.ParamName);
     }
 
     [Fact]
     public void WithChurchId_Empty_Throws()
     {
+        // Arrange
         var churchId = Guid.Empty;
 
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithChurchId(churchId));
+        // Act
+        var exception = Record.Exception(() => new ChurchAttributeBuilder().WithChurchId(churchId));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
         Assert.Equal(nameof(churchId), ex.ParamName);
     }
 
     [Fact]
     public void WithKey_Blank_Throws()
     {
+        // Arrange
         var key = TestValues.NewBlank();
 
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithKey(key));
+        // Act
+        var exception = Record.Exception(() => new ChurchAttributeBuilder().WithKey(key));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
         Assert.Equal(nameof(key), ex.ParamName);
     }
 
     [Fact]
     public void WithValue_Blank_Throws()
     {
-        var blankValue = TestValues.NewBlank();
+        // Arrange
+        var value = TestValues.NewBlank();
 
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithValue(blankValue));
-        Assert.Equal("value", ex.ParamName);
+        // Act
+        var exception = Record.Exception(() => new ChurchAttributeBuilder().WithValue(value));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
+        Assert.Equal(nameof(value), ex.ParamName);
     }
 
     [Fact]
     public void WithSource_Blank_Throws()
     {
+        // Arrange
         var source = TestValues.NewBlank();
 
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithSource(source));
+        // Act
+        var exception = Record.Exception(() => new ChurchAttributeBuilder().WithSource(source));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
         Assert.Equal(nameof(source), ex.ParamName);
     }
 
@@ -70,31 +100,46 @@ public sealed class ChurchAttributeTests
     [MemberData(nameof(OutOfRangeConfidences))]
     public void WithConfidence_OutOfRange_Throws(decimal confidence)
     {
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new ChurchAttributeBuilder().WithConfidence(confidence));
+        // Act
+        var exception = Record.Exception(() => new ChurchAttributeBuilder().WithConfidence(confidence));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentOutOfRangeException>(exception);
         Assert.Equal(nameof(confidence), ex.ParamName);
     }
 
     [Fact]
     public void WithCreatedAt_Default_Throws()
     {
+        // Arrange
         var createdAt = default(DateTimeOffset);
 
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithCreatedAt(createdAt));
+        // Act
+        var exception = Record.Exception(() => new ChurchAttributeBuilder().WithCreatedAt(createdAt));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
         Assert.Equal(nameof(createdAt), ex.ParamName);
     }
 
     [Fact]
     public void WithUpdatedAt_Default_Throws()
     {
+        // Arrange
         var updatedAt = default(DateTimeOffset);
 
-        var ex = Assert.Throws<ArgumentException>(() => new ChurchAttributeBuilder().WithUpdatedAt(updatedAt));
+        // Act
+        var exception = Record.Exception(() => new ChurchAttributeBuilder().WithUpdatedAt(updatedAt));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
         Assert.Equal(nameof(updatedAt), ex.ParamName);
     }
 
     [Fact]
     public void Build_RequiredFieldNeverSet_Throws()
     {
+        // Arrange
         var attributeId = Guid.NewGuid();
         var churchId = Guid.NewGuid();
         var attributeKey = TestValues.NewAttributeKey();
@@ -111,7 +156,11 @@ public sealed class ChurchAttributeTests
             .WithCreatedAt(createdAt)
             .WithUpdatedAt(updatedAt);
 
-        var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
+        // Act
+        var exception = Record.Exception(() => builder.Build());
+
+        // Assert
+        var ex = Assert.IsType<InvalidOperationException>(exception);
         Assert.Contains(nameof(ChurchAttributeBuilder.WithSource), ex.Message, StringComparison.Ordinal);
     }
 

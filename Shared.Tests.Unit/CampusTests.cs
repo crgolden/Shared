@@ -10,12 +10,15 @@ public sealed class CampusTests
     [Fact]
     public void Build_AllValidInput_ReturnsCampus()
     {
+        // Arrange
         var campusName = TestValues.NewName();
         var campusCity = TestValues.NewCity();
         var campusState = TestValues.NewStateCode();
 
+        // Act
         var campus = Build(name: campusName, city: campusCity, state: campusState);
 
+        // Assert
         Assert.Equal(campusName, campus.Name);
         Assert.Equal(campusCity, campus.City);
         Assert.Equal(campusState, campus.State);
@@ -24,52 +27,84 @@ public sealed class CampusTests
     [Fact]
     public void WithId_Empty_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithId(Guid.Empty));
-        Assert.Equal("id", ex.ParamName);
+        // Arrange
+        var id = Guid.Empty;
+
+        // Act
+        var exception = Record.Exception(() => new CampusBuilder().WithId(id));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
+        Assert.Equal(nameof(id), ex.ParamName);
     }
 
     [Fact]
     public void WithChurchId_Empty_Throws()
     {
+        // Arrange
         var churchId = Guid.Empty;
 
-        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithChurchId(churchId));
+        // Act
+        var exception = Record.Exception(() => new CampusBuilder().WithChurchId(churchId));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
         Assert.Equal(nameof(churchId), ex.ParamName);
     }
 
     [Fact]
     public void WithName_Blank_Throws()
     {
+        // Arrange
         var name = TestValues.NewBlank();
 
-        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithName(name));
+        // Act
+        var exception = Record.Exception(() => new CampusBuilder().WithName(name));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
         Assert.Equal(nameof(name), ex.ParamName);
     }
 
     [Fact]
     public void WithCity_Null_Throws()
     {
+        // Arrange
         string? city = null;
 
-        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithCity(city));
+        // Act
+        var exception = Record.Exception(() => new CampusBuilder().WithCity(city));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
         Assert.Equal(nameof(city), ex.ParamName);
     }
 
     [Fact]
     public void WithState_UndefinedCode_Throws()
     {
+        // Arrange
         var state = TestValues.NewUndefinedStateCode();
 
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new CampusBuilder().WithState(state));
+        // Act
+        var exception = Record.Exception(() => new CampusBuilder().WithState(state));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentOutOfRangeException>(exception);
         Assert.Equal(nameof(state), ex.ParamName);
     }
 
     [Fact]
     public void WithZip_Blank_Throws()
     {
+        // Arrange
         var zip = TestValues.NewBlank();
 
-        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithZip(zip));
+        // Act
+        var exception = Record.Exception(() => new CampusBuilder().WithZip(zip));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
         Assert.Equal(nameof(zip), ex.ParamName);
     }
 
@@ -78,7 +113,11 @@ public sealed class CampusTests
     [InlineData(CampusBuilder.MaxLatitude + OutOfRangeCoordinateOffset)]
     public void WithLatitude_OutOfRange_Throws(double latitude)
     {
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new CampusBuilder().WithLatitude(latitude));
+        // Act
+        var exception = Record.Exception(() => new CampusBuilder().WithLatitude(latitude));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentOutOfRangeException>(exception);
         Assert.Equal(nameof(latitude), ex.ParamName);
     }
 
@@ -87,31 +126,46 @@ public sealed class CampusTests
     [InlineData(CampusBuilder.MaxLongitude + OutOfRangeCoordinateOffset)]
     public void WithLongitude_OutOfRange_Throws(double longitude)
     {
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new CampusBuilder().WithLongitude(longitude));
+        // Act
+        var exception = Record.Exception(() => new CampusBuilder().WithLongitude(longitude));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentOutOfRangeException>(exception);
         Assert.Equal(nameof(longitude), ex.ParamName);
     }
 
     [Fact]
     public void WithCreatedAt_Default_Throws()
     {
+        // Arrange
         var createdAt = default(DateTimeOffset);
 
-        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithCreatedAt(createdAt));
+        // Act
+        var exception = Record.Exception(() => new CampusBuilder().WithCreatedAt(createdAt));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
         Assert.Equal(nameof(createdAt), ex.ParamName);
     }
 
     [Fact]
     public void WithUpdatedAt_Default_Throws()
     {
+        // Arrange
         var updatedAt = default(DateTimeOffset);
 
-        var ex = Assert.Throws<ArgumentException>(() => new CampusBuilder().WithUpdatedAt(updatedAt));
+        // Act
+        var exception = Record.Exception(() => new CampusBuilder().WithUpdatedAt(updatedAt));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentException>(exception);
         Assert.Equal(nameof(updatedAt), ex.ParamName);
     }
 
     [Fact]
     public void Build_RequiredFieldNeverSet_Throws()
     {
+        // Arrange
         var campusId = Guid.NewGuid();
         var churchId = Guid.NewGuid();
         var campusName = TestValues.NewName();
@@ -132,7 +186,11 @@ public sealed class CampusTests
             .WithCreatedAt(createdAt)
             .WithUpdatedAt(updatedAt);
 
-        var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
+        // Act
+        var exception = Record.Exception(() => builder.Build());
+
+        // Assert
+        var ex = Assert.IsType<InvalidOperationException>(exception);
         Assert.Contains(nameof(CampusBuilder.WithCity), ex.Message, StringComparison.Ordinal);
     }
 
