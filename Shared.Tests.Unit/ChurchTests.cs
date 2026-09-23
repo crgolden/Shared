@@ -19,8 +19,8 @@ public sealed class ChurchTests
     public void Build_AllValidInput_ReturnsChurch()
     {
         // Arrange
-        var canonicalName = TestValues.NewName();
-        var city = TestValues.NewCity();
+        var canonicalName = Generated.NewName();
+        var city = Generated.NewCity();
         var state = TestValues.NewStateCode();
 
         // Act
@@ -50,7 +50,7 @@ public sealed class ChurchTests
     [Fact]
     public void WithCanonicalName_Blank_Throws()
     {
-        var canonicalName = TestValues.NewBlank();
+        var canonicalName = Generated.NewBlank();
 
         // Act
         var exception = Record.Exception(() => new ChurchBuilder().WithCanonicalName(canonicalName));
@@ -63,7 +63,7 @@ public sealed class ChurchTests
     [Fact]
     public void WithSlug_Blank_Throws()
     {
-        var slug = TestValues.NewBlank();
+        var slug = Generated.NewBlank();
 
         // Act
         var exception = Record.Exception(() => new ChurchBuilder().WithSlug(slug));
@@ -89,7 +89,7 @@ public sealed class ChurchTests
     [Fact]
     public void WithCity_Blank_Throws()
     {
-        var city = TestValues.NewBlank();
+        var city = Generated.NewBlank();
 
         // Act
         var exception = Record.Exception(() => new ChurchBuilder().WithCity(city));
@@ -115,7 +115,7 @@ public sealed class ChurchTests
     [Fact]
     public void WithZip_Blank_Throws()
     {
-        var zip = TestValues.NewBlank();
+        var zip = Generated.NewBlank();
 
         // Act
         var exception = Record.Exception(() => new ChurchBuilder().WithZip(zip));
@@ -128,7 +128,7 @@ public sealed class ChurchTests
     [Fact]
     public void WithPrimaryLanguage_Blank_Throws()
     {
-        var primaryLanguage = TestValues.NewBlank();
+        var primaryLanguage = Generated.NewBlank();
 
         // Act
         var exception = Record.Exception(() => new ChurchBuilder().WithPrimaryLanguage(primaryLanguage));
@@ -230,7 +230,7 @@ public sealed class ChurchTests
     public void Build_CreatedAtCarriesNonZeroOffset_PreservesTheInstant()
     {
         // Arrange
-        var createdAtInSourceOffset = TestValues.NewTimestampWithNonZeroOffset();
+        var createdAtInSourceOffset = Generated.NewTimestampWithNonZeroOffset();
 
         // Act
         var church = Build(createdAt: createdAtInSourceOffset);
@@ -243,7 +243,7 @@ public sealed class ChurchTests
     public void Build_CreatedAtCarriesNonZeroOffset_PreservesTheOffset()
     {
         // Arrange
-        var createdAtInSourceOffset = TestValues.NewTimestampWithNonZeroOffset();
+        var createdAtInSourceOffset = Generated.NewTimestampWithNonZeroOffset();
 
         // Act
         var church = Build(createdAt: createdAtInSourceOffset);
@@ -256,25 +256,25 @@ public sealed class ChurchTests
     public void Build_LastVerifiedAtCarriesNonZeroOffset_PreservesTheInstant()
     {
         // Arrange
-        var lastVerifiedAtInSourceOffset = TestValues.NewTimestampWithNonZeroOffset();
+        var lastVerifiedAtInSourceOffset = Generated.NewTimestampWithNonZeroOffset();
         var churchId = Guid.NewGuid();
 
         // Act
         var church = new ChurchBuilder()
             .WithId(churchId)
-            .WithCanonicalName(TestValues.NewName())
-            .WithSlug(TestValues.NewSlug())
-            .WithLatitude(TestValues.NewLatitude())
-            .WithLongitude(TestValues.NewLongitude())
-            .WithCity(TestValues.NewCity())
+            .WithCanonicalName(Generated.NewName())
+            .WithSlug(Generated.NewSlug())
+            .WithLatitude(Generated.NewLatitude())
+            .WithLongitude(Generated.NewLongitude())
+            .WithCity(Generated.NewCity())
             .WithState(TestValues.NewStateCode())
-            .WithZip(TestValues.NewZip())
+            .WithZip(Generated.NewZip())
             .WithWorshipStyle(TestValues.NewWorshipStyleCode())
-            .WithPrimaryLanguage(TestValues.NewLanguage())
-            .WithConfidenceScore(TestValues.NewConfidenceScore())
+            .WithPrimaryLanguage(Generated.NewLanguage())
+            .WithConfidenceScore(Generated.NewRoundedFraction(ChurchBuilder.ConfidenceScoreScale))
             .WithLastVerifiedAt(lastVerifiedAtInSourceOffset)
-            .WithCreatedAt(TestValues.NewUtcTimestamp())
-            .WithUpdatedAt(TestValues.NewUtcTimestamp())
+            .WithCreatedAt(Generated.NewUtcTimestamp())
+            .WithUpdatedAt(Generated.NewUtcTimestamp())
             .Build();
 
         // Assert
@@ -285,7 +285,7 @@ public sealed class ChurchTests
     public void Build_UtcTimestamp_CarriesZeroOffset()
     {
         // Arrange
-        var createdAtInUtc = TestValues.NewUtcTimestamp();
+        var createdAtInUtc = Generated.NewUtcTimestamp();
 
         // Act
         var church = Build(createdAt: createdAtInUtc);
@@ -299,17 +299,17 @@ public sealed class ChurchTests
     {
         // Arrange
         var churchId = Guid.NewGuid();
-        var canonicalName = TestValues.NewName();
-        var slug = TestValues.NewSlug();
-        var latitude = TestValues.NewLatitude();
-        var longitude = TestValues.NewLongitude();
+        var canonicalName = Generated.NewName();
+        var slug = Generated.NewSlug();
+        var latitude = Generated.NewLatitude();
+        var longitude = Generated.NewLongitude();
         var state = TestValues.NewStateCode();
-        var zip = TestValues.NewZip();
+        var zip = Generated.NewZip();
         var worshipStyle = TestValues.NewWorshipStyleCode();
-        var primaryLanguage = TestValues.NewLanguage();
-        var confidenceScore = TestValues.NewConfidenceScore();
-        var createdAt = TestValues.NewUtcTimestamp();
-        var updatedAt = TestValues.NewUtcTimestamp();
+        var primaryLanguage = Generated.NewLanguage();
+        var confidenceScore = Generated.NewRoundedFraction(ChurchBuilder.ConfidenceScoreScale);
+        var createdAt = Generated.NewUtcTimestamp();
+        var updatedAt = Generated.NewUtcTimestamp();
         var builder = new ChurchBuilder()
             .WithId(churchId)
             .WithCanonicalName(canonicalName)
@@ -351,19 +351,19 @@ public sealed class ChurchTests
 
         return new ChurchBuilder()
             .WithId(id ?? generatedChurchId)
-            .WithCanonicalName(canonicalName ?? TestValues.NewName())
-            .WithSlug(slug ?? TestValues.NewSlug())
-            .WithLatitude(latitude ?? TestValues.NewLatitude())
-            .WithLongitude(longitude ?? TestValues.NewLongitude())
-            .WithStreet(TestValues.NewStreet())
-            .WithCity(city ?? TestValues.NewCity())
+            .WithCanonicalName(canonicalName ?? Generated.NewName())
+            .WithSlug(slug ?? Generated.NewSlug())
+            .WithLatitude(latitude ?? Generated.NewLatitude())
+            .WithLongitude(longitude ?? Generated.NewLongitude())
+            .WithStreet(Generated.NewStreet())
+            .WithCity(city ?? Generated.NewCity())
             .WithState(state ?? TestValues.NewStateCode())
-            .WithZip(zip ?? TestValues.NewZip())
+            .WithZip(zip ?? Generated.NewZip())
             .WithWorshipStyle(worshipStyle ?? TestValues.NewWorshipStyleCode())
-            .WithPrimaryLanguage(primaryLanguage ?? TestValues.NewLanguage())
-            .WithConfidenceScore(confidenceScore ?? TestValues.NewConfidenceScore())
-            .WithCreatedAt(createdAt ?? TestValues.NewUtcTimestamp())
-            .WithUpdatedAt(updatedAt ?? TestValues.NewUtcTimestamp())
+            .WithPrimaryLanguage(primaryLanguage ?? Generated.NewLanguage())
+            .WithConfidenceScore(confidenceScore ?? Generated.NewRoundedFraction(ChurchBuilder.ConfidenceScoreScale))
+            .WithCreatedAt(createdAt ?? Generated.NewUtcTimestamp())
+            .WithUpdatedAt(updatedAt ?? Generated.NewUtcTimestamp())
             .Build();
     }
 }

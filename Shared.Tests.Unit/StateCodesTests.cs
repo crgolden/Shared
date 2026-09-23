@@ -27,7 +27,7 @@ public sealed class StateCodesTests
         var expected = TestValues.NewStateCode();
 
         // Act
-        var parsed = StateCodes.TryParse(expected.ToString().ToLowerInvariant(), out var state);
+        var parsed = StateCodes.TryParse(string.Concat(expected.ToString().Select(char.ToLowerInvariant)), out var state);
 
         // Assert
         Assert.True(parsed);
@@ -41,7 +41,7 @@ public sealed class StateCodesTests
         var expected = TestValues.NewStateCode();
 
         // Act
-        var parsed = StateCodes.TryParse($"{TestValues.NewBlank()}{expected}{TestValues.NewBlank()}", out var state);
+        var parsed = StateCodes.TryParse($"{Generated.NewBlank()}{expected}{Generated.NewBlank()}", out var state);
 
         // Assert
         Assert.True(parsed);
@@ -75,7 +75,7 @@ public sealed class StateCodesTests
     public void TryParse_RejectsAStringOfTheWrongLength()
     {
         // Act
-        var parsed = StateCodes.TryParse(TestValues.NewUnparseableStateCode(), out _);
+        var parsed = StateCodes.TryParse(Generated.NewUnparseableStateCode(), out _);
 
         // Assert
         Assert.False(parsed);
@@ -85,7 +85,7 @@ public sealed class StateCodesTests
     public void TryParse_RejectsBlank()
     {
         // Act
-        var parsed = StateCodes.TryParse(TestValues.NewBlank(), out _);
+        var parsed = StateCodes.TryParse(Generated.NewBlank(), out _);
 
         // Assert
         Assert.False(parsed);

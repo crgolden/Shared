@@ -9,7 +9,7 @@ public sealed class MinistryTests
     public void Build_AllValidInput_ReturnsMinistry()
     {
         // Arrange
-        var ministryName = TestValues.NewName();
+        var ministryName = Generated.NewName();
 
         // Act
         var ministry = Build(name: ministryName);
@@ -50,7 +50,7 @@ public sealed class MinistryTests
     public void WithName_Blank_Throws()
     {
         // Arrange
-        var name = TestValues.NewBlank();
+        var name = Generated.NewBlank();
 
         // Act
         var exception = Record.Exception(() => new MinistryBuilder().WithName(name));
@@ -66,9 +66,9 @@ public sealed class MinistryTests
         // Arrange
         var ministryId = Guid.NewGuid();
         var churchId = Guid.NewGuid();
-        var ministryName = TestValues.NewName();
-        var createdAt = TestValues.NewUtcTimestamp();
-        var updatedAt = TestValues.NewUtcTimestamp();
+        var ministryName = Generated.NewName();
+        var createdAt = Generated.NewUtcTimestamp();
+        var updatedAt = Generated.NewUtcTimestamp();
 
         // Act
         var ministry = new MinistryBuilder()
@@ -118,8 +118,8 @@ public sealed class MinistryTests
         // Arrange
         var ministryId = Guid.NewGuid();
         var churchId = Guid.NewGuid();
-        var createdAt = TestValues.NewUtcTimestamp();
-        var updatedAt = TestValues.NewUtcTimestamp();
+        var createdAt = Generated.NewUtcTimestamp();
+        var updatedAt = Generated.NewUtcTimestamp();
         var builder = new MinistryBuilder()
             .WithId(ministryId)
             .WithChurchId(churchId)
@@ -147,10 +147,10 @@ public sealed class MinistryTests
         return new MinistryBuilder()
             .WithId(id ?? generatedMinistryId)
             .WithChurchId(churchId ?? generatedChurchId)
-            .WithName(name ?? TestValues.NewName())
-            .WithDescription(TestValues.NewDescription())
-            .WithCreatedAt(createdAt ?? TestValues.NewUtcTimestamp())
-            .WithUpdatedAt(updatedAt ?? TestValues.NewUtcTimestamp())
+            .WithName(name ?? Generated.NewName())
+            .WithDescription(Generated.NewDescription())
+            .WithCreatedAt(createdAt ?? Generated.NewUtcTimestamp())
+            .WithUpdatedAt(updatedAt ?? Generated.NewUtcTimestamp())
             .Build();
     }
 }

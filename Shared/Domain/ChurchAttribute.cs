@@ -1,5 +1,8 @@
 namespace Shared.Domain;
 
+using JetBrains.Annotations;
+
+[PublicAPI]
 public sealed class ChurchAttribute
 {
     internal ChurchAttribute()
@@ -10,11 +13,11 @@ public sealed class ChurchAttribute
 
     public Guid ChurchId { get; internal init; }
 
-    required public string Key { get; init; }
+    public required string Key { get; init; }
 
-    required public string Value { get; init; }
+    public required string Value { get; init; }
 
-    required public string Source { get; init; }
+    public required string Source { get; init; }
 
     public decimal Confidence { get; internal init; }
 

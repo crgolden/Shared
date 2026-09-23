@@ -1,5 +1,8 @@
 namespace Shared.Domain;
 
+using JetBrains.Annotations;
+
+[PublicAPI]
 public sealed class Campus
 {
     internal Campus()
@@ -10,15 +13,15 @@ public sealed class Campus
 
     public Guid ChurchId { get; internal init; }
 
-    required public string Name { get; init; }
+    public required string Name { get; init; }
 
     public string? Street { get; internal init; }
 
-    required public string City { get; init; }
+    public required string City { get; init; }
 
-    required public StateCode State { get; init; }
+    public required StateCode State { get; init; }
 
-    required public string Zip { get; init; }
+    public required string Zip { get; init; }
 
     public double Latitude { get; internal init; }
 

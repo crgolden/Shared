@@ -11,8 +11,8 @@ public sealed class CampusTests
     public void Build_AllValidInput_ReturnsCampus()
     {
         // Arrange
-        var campusName = TestValues.NewName();
-        var campusCity = TestValues.NewCity();
+        var campusName = Generated.NewName();
+        var campusCity = Generated.NewCity();
         var campusState = TestValues.NewStateCode();
 
         // Act
@@ -56,7 +56,7 @@ public sealed class CampusTests
     public void WithName_Blank_Throws()
     {
         // Arrange
-        var name = TestValues.NewBlank();
+        var name = Generated.NewBlank();
 
         // Act
         var exception = Record.Exception(() => new CampusBuilder().WithName(name));
@@ -98,7 +98,7 @@ public sealed class CampusTests
     public void WithZip_Blank_Throws()
     {
         // Arrange
-        var zip = TestValues.NewBlank();
+        var zip = Generated.NewBlank();
 
         // Act
         var exception = Record.Exception(() => new CampusBuilder().WithZip(zip));
@@ -168,13 +168,13 @@ public sealed class CampusTests
         // Arrange
         var campusId = Guid.NewGuid();
         var churchId = Guid.NewGuid();
-        var campusName = TestValues.NewName();
+        var campusName = Generated.NewName();
         var state = TestValues.NewStateCode();
-        var zip = TestValues.NewZip();
-        var latitude = TestValues.NewLatitude();
-        var longitude = TestValues.NewLongitude();
-        var createdAt = TestValues.NewUtcTimestamp();
-        var updatedAt = TestValues.NewUtcTimestamp();
+        var zip = Generated.NewZip();
+        var latitude = Generated.NewLatitude();
+        var longitude = Generated.NewLongitude();
+        var createdAt = Generated.NewUtcTimestamp();
+        var updatedAt = Generated.NewUtcTimestamp();
         var builder = new CampusBuilder()
             .WithId(campusId)
             .WithChurchId(churchId)
@@ -212,15 +212,15 @@ public sealed class CampusTests
         return new CampusBuilder()
             .WithId(id ?? generatedCampusId)
             .WithChurchId(churchId ?? generatedChurchId)
-            .WithName(name ?? TestValues.NewName())
-            .WithStreet(TestValues.NewStreet())
-            .WithCity(city ?? TestValues.NewCity())
+            .WithName(name ?? Generated.NewName())
+            .WithStreet(Generated.NewStreet())
+            .WithCity(city ?? Generated.NewCity())
             .WithState(state ?? TestValues.NewStateCode())
-            .WithZip(zip ?? TestValues.NewZip())
-            .WithLatitude(latitude ?? TestValues.NewLatitude())
-            .WithLongitude(longitude ?? TestValues.NewLongitude())
-            .WithCreatedAt(createdAt ?? TestValues.NewUtcTimestamp())
-            .WithUpdatedAt(updatedAt ?? TestValues.NewUtcTimestamp())
+            .WithZip(zip ?? Generated.NewZip())
+            .WithLatitude(latitude ?? Generated.NewLatitude())
+            .WithLongitude(longitude ?? Generated.NewLongitude())
+            .WithCreatedAt(createdAt ?? Generated.NewUtcTimestamp())
+            .WithUpdatedAt(updatedAt ?? Generated.NewUtcTimestamp())
             .Build();
     }
 }

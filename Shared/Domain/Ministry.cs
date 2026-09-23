@@ -1,5 +1,8 @@
 namespace Shared.Domain;
 
+using JetBrains.Annotations;
+
+[PublicAPI]
 public sealed class Ministry
 {
     internal Ministry()
@@ -10,7 +13,7 @@ public sealed class Ministry
 
     public Guid ChurchId { get; internal init; }
 
-    required public string Name { get; init; }
+    public required string Name { get; init; }
 
     public string? Description { get; internal init; }
 

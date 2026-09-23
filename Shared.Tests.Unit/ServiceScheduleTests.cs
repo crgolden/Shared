@@ -11,8 +11,8 @@ public sealed class ServiceScheduleTests
     public void Build_AllValidInput_ReturnsServiceSchedule()
     {
         // Arrange
-        var scheduledDayOfWeek = TestValues.NewDayOfWeek();
-        var scheduledStartTime = TestValues.NewTimeOfDay();
+        var scheduledDayOfWeek = Generated.NewDayOfWeek();
+        var scheduledStartTime = Generated.NewTimeOfDay();
 
         // Act
         var schedule = Build(dayOfWeek: scheduledDayOfWeek, startTime: scheduledStartTime);
@@ -108,9 +108,9 @@ public sealed class ServiceScheduleTests
         // Arrange
         var scheduleId = Guid.NewGuid();
         var churchId = Guid.NewGuid();
-        var scheduledDayOfWeek = TestValues.NewDayOfWeek();
-        var createdAt = TestValues.NewUtcTimestamp();
-        var updatedAt = TestValues.NewUtcTimestamp();
+        var scheduledDayOfWeek = Generated.NewDayOfWeek();
+        var createdAt = Generated.NewUtcTimestamp();
+        var updatedAt = Generated.NewUtcTimestamp();
         var builder = new ServiceScheduleBuilder()
             .WithId(scheduleId)
             .WithChurchId(churchId)
@@ -142,11 +142,11 @@ public sealed class ServiceScheduleTests
             .WithId(id ?? generatedScheduleId)
             .WithChurchId(churchId ?? generatedChurchId)
             .WithCampusId(campusId)
-            .WithDayOfWeek(dayOfWeek ?? TestValues.NewDayOfWeek())
-            .WithStartTime(startTime ?? TestValues.NewTimeOfDay())
-            .WithDescription(TestValues.NewDescription())
-            .WithCreatedAt(createdAt ?? TestValues.NewUtcTimestamp())
-            .WithUpdatedAt(updatedAt ?? TestValues.NewUtcTimestamp())
+            .WithDayOfWeek(dayOfWeek ?? Generated.NewDayOfWeek())
+            .WithStartTime(startTime ?? Generated.NewTimeOfDay())
+            .WithDescription(Generated.NewDescription())
+            .WithCreatedAt(createdAt ?? Generated.NewUtcTimestamp())
+            .WithUpdatedAt(updatedAt ?? Generated.NewUtcTimestamp())
             .Build();
     }
 }

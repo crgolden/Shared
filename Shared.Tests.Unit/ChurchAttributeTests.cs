@@ -16,7 +16,7 @@ public sealed class ChurchAttributeTests
     {
         // Arrange
         var attributeKey = TestValues.NewAttributeKey();
-        var attributeValue = TestValues.NewName();
+        var attributeValue = Generated.NewName();
 
         // Act
         var attribute = Build(key: attributeKey, value: attributeValue);
@@ -58,7 +58,7 @@ public sealed class ChurchAttributeTests
     public void WithKey_Blank_Throws()
     {
         // Arrange
-        var key = TestValues.NewBlank();
+        var key = Generated.NewBlank();
 
         // Act
         var exception = Record.Exception(() => new ChurchAttributeBuilder().WithKey(key));
@@ -72,7 +72,7 @@ public sealed class ChurchAttributeTests
     public void WithValue_Blank_Throws()
     {
         // Arrange
-        var value = TestValues.NewBlank();
+        var value = Generated.NewBlank();
 
         // Act
         var exception = Record.Exception(() => new ChurchAttributeBuilder().WithValue(value));
@@ -86,7 +86,7 @@ public sealed class ChurchAttributeTests
     public void WithSource_Blank_Throws()
     {
         // Arrange
-        var source = TestValues.NewBlank();
+        var source = Generated.NewBlank();
 
         // Act
         var exception = Record.Exception(() => new ChurchAttributeBuilder().WithSource(source));
@@ -143,10 +143,10 @@ public sealed class ChurchAttributeTests
         var attributeId = Guid.NewGuid();
         var churchId = Guid.NewGuid();
         var attributeKey = TestValues.NewAttributeKey();
-        var attributeValue = TestValues.NewName();
-        var confidence = TestValues.NewConfidenceScore();
-        var createdAt = TestValues.NewUtcTimestamp();
-        var updatedAt = TestValues.NewUtcTimestamp();
+        var attributeValue = Generated.NewName();
+        var confidence = Generated.NewRoundedFraction(ChurchAttributeBuilder.ConfidenceScale);
+        var createdAt = Generated.NewUtcTimestamp();
+        var updatedAt = Generated.NewUtcTimestamp();
         var builder = new ChurchAttributeBuilder()
             .WithId(attributeId)
             .WithChurchId(churchId)
@@ -181,11 +181,11 @@ public sealed class ChurchAttributeTests
             .WithId(id ?? generatedAttributeId)
             .WithChurchId(churchId ?? generatedChurchId)
             .WithKey(key ?? TestValues.NewAttributeKey())
-            .WithValue(value ?? TestValues.NewName())
+            .WithValue(value ?? Generated.NewName())
             .WithSource(source ?? TestValues.NewAttributeSource())
-            .WithConfidence(confidence ?? TestValues.NewConfidenceScore())
-            .WithCreatedAt(createdAt ?? TestValues.NewUtcTimestamp())
-            .WithUpdatedAt(updatedAt ?? TestValues.NewUtcTimestamp())
+            .WithConfidence(confidence ?? Generated.NewRoundedFraction(ChurchAttributeBuilder.ConfidenceScale))
+            .WithCreatedAt(createdAt ?? Generated.NewUtcTimestamp())
+            .WithUpdatedAt(updatedAt ?? Generated.NewUtcTimestamp())
             .Build();
     }
 }

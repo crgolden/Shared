@@ -1,5 +1,8 @@
 namespace Shared.Domain;
 
+using JetBrains.Annotations;
+
+[PublicAPI]
 public sealed class ServiceSchedule
 {
     internal ServiceSchedule()

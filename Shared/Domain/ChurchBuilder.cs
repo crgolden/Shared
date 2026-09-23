@@ -18,6 +18,10 @@ public sealed class ChurchBuilder
 
     public const decimal MaxConfidenceScore = 1m;
 
+    public const int ConfidenceScorePrecision = 5;
+
+    public const int ConfidenceScoreScale = 4;
+
     private Guid? _id;
     private string? _canonicalName;
     private string? _slug;

@@ -6,6 +6,10 @@ public sealed class ChurchAttributeBuilder
 
     public const decimal MaxConfidence = 1m;
 
+    public const int ConfidencePrecision = 5;
+
+    public const int ConfidenceScale = 4;
+
     private Guid? _id;
     private Guid? _churchId;
     private string? _key;
