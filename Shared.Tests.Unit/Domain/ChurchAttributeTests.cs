@@ -1,4 +1,4 @@
-namespace Shared.Tests.Unit;
+namespace Shared.Tests.Unit.Domain;
 
 using Shared.Domain;
 
@@ -7,15 +7,15 @@ public sealed class ChurchAttributeTests
 {
     public static TheoryData<decimal> OutOfRangeConfidences() => new TheoryData<decimal>
     {
-        ChurchAttributeBuilder.MinConfidence - TestValues.NewOutOfRangeOffset(),
-        ChurchAttributeBuilder.MaxConfidence + TestValues.NewOutOfRangeOffset(),
+        ChurchAttributeBuilder.MinConfidence - Generated.NewOutOfRangeOffset(),
+        ChurchAttributeBuilder.MaxConfidence + Generated.NewOutOfRangeOffset(),
     };
 
     [Fact]
     public void Build_AllValidInput_ReturnsChurchAttribute()
     {
         // Arrange
-        var attributeKey = TestValues.NewAttributeKey();
+        var attributeKey = Generated.NewAttributeKey();
         var attributeValue = Generated.NewName();
 
         // Act
@@ -142,7 +142,7 @@ public sealed class ChurchAttributeTests
         // Arrange
         var attributeId = Guid.NewGuid();
         var churchId = Guid.NewGuid();
-        var attributeKey = TestValues.NewAttributeKey();
+        var attributeKey = Generated.NewAttributeKey();
         var attributeValue = Generated.NewName();
         var confidence = Generated.NewRoundedFraction(ChurchAttributeBuilder.ConfidenceScale);
         var createdAt = Generated.NewUtcTimestamp();
@@ -180,9 +180,9 @@ public sealed class ChurchAttributeTests
         return new ChurchAttributeBuilder()
             .WithId(id ?? generatedAttributeId)
             .WithChurchId(churchId ?? generatedChurchId)
-            .WithKey(key ?? TestValues.NewAttributeKey())
+            .WithKey(key ?? Generated.NewAttributeKey())
             .WithValue(value ?? Generated.NewName())
-            .WithSource(source ?? TestValues.NewAttributeSource())
+            .WithSource(source ?? Generated.NewAttributeSource())
             .WithConfidence(confidence ?? Generated.NewRoundedFraction(ChurchAttributeBuilder.ConfidenceScale))
             .WithCreatedAt(createdAt ?? Generated.NewUtcTimestamp())
             .WithUpdatedAt(updatedAt ?? Generated.NewUtcTimestamp())

@@ -1,4 +1,4 @@
-namespace Shared.Tests.Unit;
+namespace Shared.Tests.Unit.Domain;
 
 using Shared.Domain;
 
@@ -11,8 +11,8 @@ public sealed class ChurchTests
 
     public static TheoryData<decimal> OutOfRangeConfidenceScores() => new TheoryData<decimal>
     {
-        ChurchBuilder.MinConfidenceScore - TestValues.NewOutOfRangeOffset(),
-        ChurchBuilder.MaxConfidenceScore + TestValues.NewOutOfRangeOffset(),
+        ChurchBuilder.MinConfidenceScore - Generated.NewOutOfRangeOffset(),
+        ChurchBuilder.MaxConfidenceScore + Generated.NewOutOfRangeOffset(),
     };
 
     [Fact]
@@ -21,7 +21,7 @@ public sealed class ChurchTests
         // Arrange
         var canonicalName = Generated.NewName();
         var city = Generated.NewCity();
-        var state = TestValues.NewStateCode();
+        var state = Generated.NewStateCode();
 
         // Act
         var church = Build(canonicalName: canonicalName, city: city, state: state);
@@ -102,7 +102,7 @@ public sealed class ChurchTests
     [Fact]
     public void WithState_UndefinedCode_Throws()
     {
-        var state = TestValues.NewUndefinedStateCode();
+        var state = NewUndefinedValue<StateCode>();
 
         // Act
         var exception = Record.Exception(() => new ChurchBuilder().WithState(state));
@@ -267,9 +267,9 @@ public sealed class ChurchTests
             .WithLatitude(Generated.NewLatitude())
             .WithLongitude(Generated.NewLongitude())
             .WithCity(Generated.NewCity())
-            .WithState(TestValues.NewStateCode())
+            .WithState(Generated.NewStateCode())
             .WithZip(Generated.NewZip())
-            .WithWorshipStyle(TestValues.NewWorshipStyleCode())
+            .WithWorshipStyle(Generated.NewWorshipStyleCode())
             .WithPrimaryLanguage(Generated.NewLanguage())
             .WithConfidenceScore(Generated.NewRoundedFraction(ChurchBuilder.ConfidenceScoreScale))
             .WithLastVerifiedAt(lastVerifiedAtInSourceOffset)
@@ -303,9 +303,9 @@ public sealed class ChurchTests
         var slug = Generated.NewSlug();
         var latitude = Generated.NewLatitude();
         var longitude = Generated.NewLongitude();
-        var state = TestValues.NewStateCode();
+        var state = Generated.NewStateCode();
         var zip = Generated.NewZip();
-        var worshipStyle = TestValues.NewWorshipStyleCode();
+        var worshipStyle = Generated.NewWorshipStyleCode();
         var primaryLanguage = Generated.NewLanguage();
         var confidenceScore = Generated.NewRoundedFraction(ChurchBuilder.ConfidenceScoreScale);
         var createdAt = Generated.NewUtcTimestamp();
@@ -357,9 +357,9 @@ public sealed class ChurchTests
             .WithLongitude(longitude ?? Generated.NewLongitude())
             .WithStreet(Generated.NewStreet())
             .WithCity(city ?? Generated.NewCity())
-            .WithState(state ?? TestValues.NewStateCode())
+            .WithState(state ?? Generated.NewStateCode())
             .WithZip(zip ?? Generated.NewZip())
-            .WithWorshipStyle(worshipStyle ?? TestValues.NewWorshipStyleCode())
+            .WithWorshipStyle(worshipStyle ?? Generated.NewWorshipStyleCode())
             .WithPrimaryLanguage(primaryLanguage ?? Generated.NewLanguage())
             .WithConfidenceScore(confidenceScore ?? Generated.NewRoundedFraction(ChurchBuilder.ConfidenceScoreScale))
             .WithCreatedAt(createdAt ?? Generated.NewUtcTimestamp())

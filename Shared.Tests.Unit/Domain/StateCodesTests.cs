@@ -1,4 +1,4 @@
-namespace Shared.Tests.Unit;
+namespace Shared.Tests.Unit.Domain;
 
 using System.Globalization;
 using Shared.Domain;
@@ -10,7 +10,7 @@ public sealed class StateCodesTests
     public void TryParse_ReadsAUspsCode()
     {
         // Arrange
-        var expected = TestValues.NewStateCode();
+        var expected = Generated.NewStateCode();
 
         // Act
         var parsed = StateCodes.TryParse(expected.ToString(), out var state);
@@ -24,7 +24,7 @@ public sealed class StateCodesTests
     public void TryParse_IsCaseInsensitive()
     {
         // Arrange
-        var expected = TestValues.NewStateCode();
+        var expected = Generated.NewStateCode();
 
         // Act
         var parsed = StateCodes.TryParse(string.Concat(expected.ToString().Select(char.ToLowerInvariant)), out var state);
@@ -38,7 +38,7 @@ public sealed class StateCodesTests
     public void TryParse_IgnoresSurroundingWhitespace()
     {
         // Arrange
-        var expected = TestValues.NewStateCode();
+        var expected = Generated.NewStateCode();
 
         // Act
         var parsed = StateCodes.TryParse($"{Generated.NewBlank()}{expected}{Generated.NewBlank()}", out var state);
@@ -52,7 +52,7 @@ public sealed class StateCodesTests
     public void TryParse_RejectsTheNumericFormEnumTryParseWouldAccept()
     {
         // Arrange
-        var underlyingValue = ((int)TestValues.NewStateCode()).ToString(CultureInfo.InvariantCulture);
+        var underlyingValue = ((int)Generated.NewStateCode()).ToString(CultureInfo.InvariantCulture);
 
         // Act
         var parsed = StateCodes.TryParse(underlyingValue, out _);
@@ -65,7 +65,7 @@ public sealed class StateCodesTests
     public void TryParse_RejectsATwoLetterStringThatIsNotAUspsCode()
     {
         // Act
-        var parsed = StateCodes.TryParse(TestValues.NewNonUspsLetterPair(), out _);
+        var parsed = StateCodes.TryParse(Generated.NewNonUspsLetterPair(), out _);
 
         // Assert
         Assert.False(parsed);

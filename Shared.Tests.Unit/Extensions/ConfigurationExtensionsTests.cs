@@ -1,4 +1,4 @@
-namespace Shared.Tests.Unit;
+namespace Shared.Tests.Unit.Extensions;
 
 using System.Globalization;
 using Microsoft.Extensions.Configuration;

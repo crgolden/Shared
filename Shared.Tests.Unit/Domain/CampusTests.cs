@@ -1,4 +1,4 @@
-namespace Shared.Tests.Unit;
+namespace Shared.Tests.Unit.Domain;
 
 using Shared.Domain;
 
@@ -13,7 +13,7 @@ public sealed class CampusTests
         // Arrange
         var campusName = Generated.NewName();
         var campusCity = Generated.NewCity();
-        var campusState = TestValues.NewStateCode();
+        var campusState = Generated.NewStateCode();
 
         // Act
         var campus = Build(name: campusName, city: campusCity, state: campusState);
@@ -84,7 +84,7 @@ public sealed class CampusTests
     public void WithState_UndefinedCode_Throws()
     {
         // Arrange
-        var state = TestValues.NewUndefinedStateCode();
+        var state = NewUndefinedValue<StateCode>();
 
         // Act
         var exception = Record.Exception(() => new CampusBuilder().WithState(state));
@@ -169,7 +169,7 @@ public sealed class CampusTests
         var campusId = Guid.NewGuid();
         var churchId = Guid.NewGuid();
         var campusName = Generated.NewName();
-        var state = TestValues.NewStateCode();
+        var state = Generated.NewStateCode();
         var zip = Generated.NewZip();
         var latitude = Generated.NewLatitude();
         var longitude = Generated.NewLongitude();
@@ -215,7 +215,7 @@ public sealed class CampusTests
             .WithName(name ?? Generated.NewName())
             .WithStreet(Generated.NewStreet())
             .WithCity(city ?? Generated.NewCity())
-            .WithState(state ?? TestValues.NewStateCode())
+            .WithState(state ?? Generated.NewStateCode())
             .WithZip(zip ?? Generated.NewZip())
             .WithLatitude(latitude ?? Generated.NewLatitude())
             .WithLongitude(longitude ?? Generated.NewLongitude())

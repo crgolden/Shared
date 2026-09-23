@@ -1,21 +1,25 @@
-namespace Shared.Tests.Unit;
+namespace Shared.Tests.Unit.Domain;
 
 using Shared.Domain;
 
 [Trait("Category", "Unit")]
-public sealed class MinistryTests
+public sealed class ServiceScheduleTests
 {
+    private const byte OutOfRangeDayOfWeekOffset = 1;
+
     [Fact]
-    public void Build_AllValidInput_ReturnsMinistry()
+    public void Build_AllValidInput_ReturnsServiceSchedule()
     {
         // Arrange
-        var ministryName = Generated.NewName();
+        var scheduledDayOfWeek = Generated.NewDayOfWeek();
+        var scheduledStartTime = Generated.NewTimeOfDay();
 
         // Act
-        var ministry = Build(name: ministryName);
+        var schedule = Build(dayOfWeek: scheduledDayOfWeek, startTime: scheduledStartTime);
 
         // Assert
-        Assert.Equal(ministryName, ministry.Name);
+        Assert.Equal(scheduledDayOfWeek, schedule.DayOfWeek);
+        Assert.Equal(scheduledStartTime, schedule.StartTime);
     }
 
     [Fact]
@@ -25,7 +29,7 @@ public sealed class MinistryTests
         var id = Guid.Empty;
 
         // Act
-        var exception = Record.Exception(() => new MinistryBuilder().WithId(id));
+        var exception = Record.Exception(() => new ServiceScheduleBuilder().WithId(id));
 
         // Assert
         var ex = Assert.IsType<ArgumentException>(exception);
@@ -39,7 +43,7 @@ public sealed class MinistryTests
         var churchId = Guid.Empty;
 
         // Act
-        var exception = Record.Exception(() => new MinistryBuilder().WithChurchId(churchId));
+        var exception = Record.Exception(() => new ServiceScheduleBuilder().WithChurchId(churchId));
 
         // Assert
         var ex = Assert.IsType<ArgumentException>(exception);
@@ -47,41 +51,27 @@ public sealed class MinistryTests
     }
 
     [Fact]
-    public void WithName_Blank_Throws()
+    public void WithCampusId_Null_IsAllowed()
     {
-        // Arrange
-        var name = Generated.NewBlank();
-
         // Act
-        var exception = Record.Exception(() => new MinistryBuilder().WithName(name));
+        var schedule = Build(campusId: null);
 
         // Assert
-        var ex = Assert.IsType<ArgumentException>(exception);
-        Assert.Equal(nameof(name), ex.ParamName);
+        Assert.Null(schedule.CampusId);
     }
 
     [Fact]
-    public void WithDescription_Null_IsAllowed()
+    public void WithDayOfWeek_AboveSix_Throws()
     {
         // Arrange
-        var ministryId = Guid.NewGuid();
-        var churchId = Guid.NewGuid();
-        var ministryName = Generated.NewName();
-        var createdAt = Generated.NewUtcTimestamp();
-        var updatedAt = Generated.NewUtcTimestamp();
+        const byte dayOfWeek = ServiceScheduleBuilder.MaxDayOfWeek + OutOfRangeDayOfWeekOffset;
 
         // Act
-        var ministry = new MinistryBuilder()
-            .WithId(ministryId)
-            .WithChurchId(churchId)
-            .WithName(ministryName)
-            .WithDescription(null)
-            .WithCreatedAt(createdAt)
-            .WithUpdatedAt(updatedAt)
-            .Build();
+        var exception = Record.Exception(() => new ServiceScheduleBuilder().WithDayOfWeek(dayOfWeek));
 
         // Assert
-        Assert.Null(ministry.Description);
+        var ex = Assert.IsType<ArgumentOutOfRangeException>(exception);
+        Assert.Equal(nameof(dayOfWeek), ex.ParamName);
     }
 
     [Fact]
@@ -91,7 +81,7 @@ public sealed class MinistryTests
         var createdAt = default(DateTimeOffset);
 
         // Act
-        var exception = Record.Exception(() => new MinistryBuilder().WithCreatedAt(createdAt));
+        var exception = Record.Exception(() => new ServiceScheduleBuilder().WithCreatedAt(createdAt));
 
         // Assert
         var ex = Assert.IsType<ArgumentException>(exception);
@@ -105,7 +95,7 @@ public sealed class MinistryTests
         var updatedAt = default(DateTimeOffset);
 
         // Act
-        var exception = Record.Exception(() => new MinistryBuilder().WithUpdatedAt(updatedAt));
+        var exception = Record.Exception(() => new ServiceScheduleBuilder().WithUpdatedAt(updatedAt));
 
         // Assert
         var ex = Assert.IsType<ArgumentException>(exception);
@@ -116,13 +106,15 @@ public sealed class MinistryTests
     public void Build_RequiredFieldNeverSet_Throws()
     {
         // Arrange
-        var ministryId = Guid.NewGuid();
+        var scheduleId = Guid.NewGuid();
         var churchId = Guid.NewGuid();
+        var scheduledDayOfWeek = Generated.NewDayOfWeek();
         var createdAt = Generated.NewUtcTimestamp();
         var updatedAt = Generated.NewUtcTimestamp();
-        var builder = new MinistryBuilder()
-            .WithId(ministryId)
+        var builder = new ServiceScheduleBuilder()
+            .WithId(scheduleId)
             .WithChurchId(churchId)
+            .WithDayOfWeek(scheduledDayOfWeek)
             .WithCreatedAt(createdAt)
             .WithUpdatedAt(updatedAt);
 
@@ -131,23 +123,27 @@ public sealed class MinistryTests
 
         // Assert
         var ex = Assert.IsType<InvalidOperationException>(exception);
-        Assert.Contains(nameof(MinistryBuilder.WithName), ex.Message, StringComparison.Ordinal);
+        Assert.Contains(nameof(ServiceScheduleBuilder.WithStartTime), ex.Message, StringComparison.Ordinal);
     }
 
-    private static Ministry Build(
+    private static ServiceSchedule Build(
         Guid? id = null,
         Guid? churchId = null,
-        string? name = null,
+        Guid? campusId = null,
+        byte? dayOfWeek = null,
+        TimeOnly? startTime = null,
         DateTimeOffset? createdAt = null,
         DateTimeOffset? updatedAt = null)
     {
-        var generatedMinistryId = Guid.NewGuid();
+        var generatedScheduleId = Guid.NewGuid();
         var generatedChurchId = Guid.NewGuid();
 
-        return new MinistryBuilder()
-            .WithId(id ?? generatedMinistryId)
+        return new ServiceScheduleBuilder()
+            .WithId(id ?? generatedScheduleId)
             .WithChurchId(churchId ?? generatedChurchId)
-            .WithName(name ?? Generated.NewName())
+            .WithCampusId(campusId)
+            .WithDayOfWeek(dayOfWeek ?? Generated.NewDayOfWeek())
+            .WithStartTime(startTime ?? Generated.NewTimeOfDay())
             .WithDescription(Generated.NewDescription())
             .WithCreatedAt(createdAt ?? Generated.NewUtcTimestamp())
             .WithUpdatedAt(updatedAt ?? Generated.NewUtcTimestamp())
