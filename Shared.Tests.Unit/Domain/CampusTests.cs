@@ -84,7 +84,7 @@ public sealed class CampusTests
     public void WithState_UndefinedCode_Throws()
     {
         // Arrange
-        var state = NewUndefinedValue<StateCode>();
+        var state = Generated.NewUndefinedValue<StateCode>();
 
         // Act
         var exception = Record.Exception(() => new CampusBuilder().WithState(state));

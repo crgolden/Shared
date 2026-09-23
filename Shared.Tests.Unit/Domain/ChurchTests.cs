@@ -102,7 +102,7 @@ public sealed class ChurchTests
     [Fact]
     public void WithState_UndefinedCode_Throws()
     {
-        var state = NewUndefinedValue<StateCode>();
+        var state = Generated.NewUndefinedValue<StateCode>();
 
         // Act
         var exception = Record.Exception(() => new ChurchBuilder().WithState(state));

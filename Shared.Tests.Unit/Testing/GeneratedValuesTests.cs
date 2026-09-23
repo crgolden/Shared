@@ -155,6 +155,7 @@ public sealed class GeneratedValuesTests
         Assert.NotEqual(value, padded);
         Assert.Equal(value, padded.Trim());
     }
+
     [Fact]
     public void NewDefinedValue_Generated_IsADefinedMemberOfTheEnum()
     {

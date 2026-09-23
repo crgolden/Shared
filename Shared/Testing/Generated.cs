@@ -3,6 +3,7 @@ namespace Shared.Testing;
 using System.Data.Common;
 using System.Globalization;
 using System.Net;
+using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text.Json;
 using JetBrains.Annotations;
@@ -91,6 +92,8 @@ public static class Generated
     private const int LargestScoreStepAbove = 6;
     private const int LargestScoreStepBelow = 6;
     private const string UserAgentTagVersion = "1.0";
+
+    public static string LoopbackHost => IPAddress.Loopback.ToString();
 
     public static string LowercaseToken(int length) =>
         string.Concat(Enumerable.Range(0, length).Select(_ => (char)Random.Shared.Next(FirstLetter, LastLetter + 1)));
@@ -246,8 +249,11 @@ public static class Generated
 
     public static string NewLongTitle() => NewTokenFromFirstHalfOfAlphabet(24);
 
-    public static string WithAnEditionSuffix(string title) =>
-        $"{title} {NewTokenFromSecondHalfOfAlphabet(title.Length / 4)}";
+    public static string WithAnEditionSuffix(string title)
+    {
+        ArgumentNullException.ThrowIfNull(title);
+        return $"{title} {NewTokenFromSecondHalfOfAlphabet(title.Length / 4)}";
+    }
 
     public static string NewPublisher() => $"{LowercaseToken(6)} {LowercaseToken(9)}";
 
@@ -275,14 +281,12 @@ public static class Generated
 
     public static Uri NewCoverImageUri() => new(NewCoverImageAddress(), UriKind.Absolute);
 
-    public static string NewTitleIdWithPrefix(string prefix) => $"{prefix}{Random.Shared.Next(10000, 100000)}_00";
-
     public static string NewTextShorterThanATitleIdPrefix() => LowercaseToken(Random.Shared.Next(1, 4)).ToUpperInvariant();
 
-    public static IReadOnlyList<string> NewDistinctTitleIds(int count)
+    public static IReadOnlyList<string> NewDistinctTitleIds(string platformPrefix, int count)
     {
-        var firstSerial = Random.Shared.Next(10000, 100000 - count);
-        return [.. Enumerable.Range(0, count).Select(offset => NewTitleIdWithSerial(firstSerial + offset))];
+        var firstSerial = Random.Shared.Next(SmallestTitleSerial, LargestTitleSerial - count);
+        return [.. Enumerable.Range(0, count).Select(offset => NewTitleIdWithSerial(platformPrefix, firstSerial + offset))];
     }
 
     public static int NewConceptNumericId() => Random.Shared.Next(1, 100_000_000);
@@ -539,8 +543,7 @@ public static class Generated
     public static int NewWorshipStyleCode() =>
         Random.Shared.Next(ChurchBuilder.MinWorshipStyle, ChurchBuilder.MaxWorshipStyle + 1);
 
-    public static string NewStateCodeText() =>
-        $"{(char)Random.Shared.Next('A', 'Z' + 1)}{(char)Random.Shared.Next('A', 'Z' + 1)}";
+    public static string NewStateCodeText() => NewStateCode().ToString();
 
     public static string NewOverlongZipDigits() =>
         Random.Shared.NextInt64(100_000_000_000L, 1_000_000_000_000L)
@@ -827,7 +830,7 @@ public static class Generated
     public static string NewAuthenticatorKey() => Guid.NewGuid().ToString("N").ToUpperInvariant();
 
     public static string NewVerificationCode() =>
-        Random.Shared.Next(0, 1_000_000).ToString("D6", System.Globalization.CultureInfo.InvariantCulture);
+        Random.Shared.Next(0, 1_000_000).ToString("D6", CultureInfo.InvariantCulture);
 
     public static string NewPageName() => NewTokenFromFirstHalfOfAlphabet(8);
 
@@ -847,13 +850,17 @@ public static class Generated
 
     public static string WithFormattingSeparators(string value)
     {
+        ArgumentNullException.ThrowIfNull(value);
         var firstBreak = Random.Shared.Next(1, value.Length);
         var secondBreak = Random.Shared.Next(firstBreak, value.Length);
         return string.Concat(value[..firstBreak], ' ', value[firstBreak..secondBreak], '-', value[secondBreak..]);
     }
 
-    public static string WithEmbeddedWhitespace(string value) =>
-        value.Insert(Random.Shared.Next(1, value.Length), NewWhitespaceValue());
+    public static string WithEmbeddedWhitespace(string value)
+    {
+        ArgumentNullException.ThrowIfNull(value);
+        return value.Insert(Random.Shared.Next(1, value.Length), NewWhitespaceValue());
+    }
 
     public static string NewTokenFromCodePointRange(int firstCodePoint, int lastCodePoint) =>
         string.Concat(Enumerable
@@ -897,7 +904,7 @@ public static class Generated
         NewTitle($"{LowercaseToken(5).ToUpperInvariant()} {keyword}");
 
     public static string NewPs3TitleId() =>
-        $"BLUS{Random.Shared.Next(10000, 100000).ToString(System.Globalization.CultureInfo.InvariantCulture)}_00";
+        $"BLUS{Random.Shared.Next(10000, 100000).ToString(CultureInfo.InvariantCulture)}_00";
 
     public static string NewOwnedEdition() => $"edition-{LowercaseToken(8)}";
 
@@ -922,8 +929,6 @@ public static class Generated
 
     public static string NewServiceAddress() => $"https://{LowercaseToken(12)}.example";
 
-    public static string LoopbackHost => System.Net.IPAddress.Loopback.ToString();
-
     public static string NewUnexpectedHealthBody() => LowercaseToken(8);
 
     public static string NewHostname() => $"{LowercaseToken(12)}.example";
@@ -943,9 +948,9 @@ public static class Generated
 
     public static int NewClosedLoopbackPort()
     {
-        using var probe = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback, 0);
+        using var probe = new TcpListener(IPAddress.Loopback, 0);
         probe.Start();
-        var port = ((System.Net.IPEndPoint)probe.LocalEndpoint).Port;
+        var port = ((IPEndPoint)probe.LocalEndpoint).Port;
         probe.Stop();
         return port;
     }
@@ -955,7 +960,7 @@ public static class Generated
     public static string NewModelName() => $"{LowercaseToken(4)}-{LowercaseToken(4)}";
 
     public static string NewMaxOutputTokenCount() =>
-        Random.Shared.Next(256, 4096).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        Random.Shared.Next(256, 4096).ToString(CultureInfo.InvariantCulture);
 
     public static string NewInstructions() => $"{LowercaseToken(8)} {LowercaseToken(6)}";
 
@@ -1048,9 +1053,6 @@ public static class Generated
         return bytes;
     }
 
-    public static string NewUrlSafeBase64Key(int length) =>
-        Convert.ToBase64String(NewRandomBytes(length)).Replace('+', '-').Replace('/', '_');
-
     public static int NewPageAlignedCursor(int pageSize) => Random.Shared.Next(1, LargestPageMultiple) * pageSize;
 
     public static Uri NewHttpsUri(string host, string? path = null) =>
@@ -1071,4 +1073,10 @@ public static class Generated
         threshold - (Random.Shared.Next(1, LargestScoreStepBelow) / (decimal)TenthsPerUnit);
 
     public static string NewUserAgentTaggedWith(string token) => $"{NewBrowserUserAgent()} {token}/{UserAgentTagVersion}";
+
+    public static string NewLetterPair() =>
+        $"{(char)Random.Shared.Next('A', 'Z' + 1)}{(char)Random.Shared.Next('A', 'Z' + 1)}";
+
+    public static string NewWebSafeBase64Key(int length) =>
+        Convert.ToBase64String(NewRandomBytes(length)).Replace('+', '-').Replace('/', '_');
 }
