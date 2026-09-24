@@ -92,6 +92,8 @@ public static class Generated
     private const int LargestScoreStepAbove = 6;
     private const int LargestScoreStepBelow = 6;
     private const string UserAgentTagVersion = "1.0";
+    private const int LargestDisplayPriceUnits = 1000;
+    private const int DecimalBase = 10;
 
     public static string LoopbackHost => IPAddress.Loopback.ToString();
 
@@ -1079,4 +1081,23 @@ public static class Generated
 
     public static string NewWebSafeBase64Key(int length) =>
         Convert.ToBase64String(NewRandomBytes(length)).Replace('+', '-').Replace('/', '_');
+
+    public static string NewSingleArgumentFormat() => $"{LowercaseToken(8)} {{0}} {LowercaseToken(6)}";
+
+    public static int NewWorshipStyleCodeOtherThanUnknown() =>
+        Random.Shared.Next(ChurchBuilder.MinWorshipStyle + 1, ChurchBuilder.MaxWorshipStyle + 1);
+
+    public static DisplayPrice NewDisplayPrice(string currencyPrefix, int centsPerUnit)
+    {
+        ArgumentNullException.ThrowIfNull(currencyPrefix);
+        var fractionDigits = (centsPerUnit - 1).ToString(CultureInfo.InvariantCulture).Length;
+        if (centsPerUnit <= 1 || (decimal)Math.Pow(DecimalBase, fractionDigits) != centsPerUnit)
+        {
+            throw new ArgumentOutOfRangeException(nameof(centsPerUnit), centsPerUnit, "A display price has a power-of-ten number of cents per unit.");
+        }
+
+        var cents = Random.Shared.Next(centsPerUnit, LargestDisplayPriceUnits * centsPerUnit);
+        var amount = decimal.Divide(cents, centsPerUnit).ToString($"F{fractionDigits}", CultureInfo.InvariantCulture);
+        return new DisplayPrice($"{currencyPrefix}{amount}", cents);
+    }
 }

@@ -188,4 +188,56 @@ public sealed class GeneratedValuesTests
         // Assert
         Assert.NotEqual(excluded, token);
     }
+
+    [Fact]
+    public void NewSingleArgumentFormat_Generated_PlacesItsArgumentInsideTheText()
+    {
+        // Arrange
+        var argument = Generated.NewText();
+
+        // Act
+        var formatted = string.Format(CultureInfo.InvariantCulture, Generated.NewSingleArgumentFormat(), argument);
+
+        // Assert
+        Assert.Contains(argument, formatted, StringComparison.Ordinal);
+        Assert.NotEqual(argument, formatted);
+    }
+
+    [Fact]
+    public void NewWorshipStyleCodeOtherThanUnknown_Generated_IsAValidStyleOtherThanTheLowestCode()
+    {
+        // Act
+        var code = Generated.NewWorshipStyleCodeOtherThanUnknown();
+
+        // Assert
+        Assert.InRange(code, ChurchBuilder.MinWorshipStyle, ChurchBuilder.MaxWorshipStyle);
+        Assert.NotEqual(ChurchBuilder.MinWorshipStyle, code);
+    }
+
+    [Fact]
+    public void NewDisplayPrice_Generated_ReadsBackAsItsCents()
+    {
+        // Arrange
+        var currencyPrefix = Generated.NewUppercaseMarker();
+
+        // Act
+        var price = Generated.NewDisplayPrice(currencyPrefix, UsDollarConstants.CentsPerDollar);
+
+        // Assert
+        Assert.StartsWith(currencyPrefix, price.Text, StringComparison.Ordinal);
+        Assert.Equal(
+            price.Cents,
+            decimal.Parse(price.Text[currencyPrefix.Length..], NumberStyles.Number, CultureInfo.InvariantCulture) * UsDollarConstants.CentsPerDollar);
+    }
+
+    [Fact]
+    public void NewDisplayPrice_CentsPerUnitNotAPowerOfTen_Throws()
+    {
+        // Act
+        var exception = Record.Exception(
+            () => Generated.NewDisplayPrice(Generated.NewUppercaseMarker(), UsDollarConstants.CentsPerDollar - UsDollarConstants.CentsPerDime));
+
+        // Assert
+        Assert.IsType<ArgumentOutOfRangeException>(exception);
+    }
 }

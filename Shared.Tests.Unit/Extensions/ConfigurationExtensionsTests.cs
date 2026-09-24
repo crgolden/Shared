@@ -39,6 +39,34 @@ public sealed class ConfigurationExtensionsTests
     }
 
     [Fact]
+    public void GetRequired_WhenAnIntKeyIsMissing_ThrowsRatherThanReturningZero()
+    {
+        // Arrange
+        var missingSettingKey = $"key-{Guid.NewGuid():N}";
+        var configuration = new ConfigurationBuilder().Build();
+
+        // Act
+        var missing = Record.Exception(() => configuration.GetRequired<int>(missingSettingKey));
+
+        // Assert
+        Assert.IsType<InvalidOperationException>(missing);
+    }
+
+    [Fact]
+    public void GetRequired_WhenABoolKeyIsMissing_ThrowsRatherThanReturningFalse()
+    {
+        // Arrange
+        var missingSettingKey = $"key-{Guid.NewGuid():N}";
+        var configuration = new ConfigurationBuilder().Build();
+
+        // Act
+        var missing = Record.Exception(() => configuration.GetRequired<bool>(missingSettingKey));
+
+        // Assert
+        Assert.IsType<InvalidOperationException>(missing);
+    }
+
+    [Fact]
     public void GetRequired_ForANonStringType_ConvertsTheConfiguredTextRatherThanFailing()
     {
         // Arrange

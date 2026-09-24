@@ -86,6 +86,7 @@ jobs:
             /d:sonar.host.url="https://sonarcloud.io" `
             /d:sonar.cs.opencover.reportsPaths="coverage.opencover.xml" `
             /d:sonar.exclusions="**/bin/**,**/obj/**,**/*.png" `
+            /d:sonar.qualitygate.wait=true `
             /d:sonar.scanner.skipJreProvisioning=true
 
       - name: Restore
@@ -94,11 +95,21 @@ jobs:
       - name: Build
         run: dotnet build Shared.slnx --no-restore --configuration Release
 
+      - name: ReSharper inspection (jb inspectcode)
+        run: |
+          dotnet jb inspectcode Shared.slnx --no-build -e=WARNING -o=inspectcode.sarif
+          $results = @((Get-Content inspectcode.sarif -Raw | ConvertFrom-Json).runs | ForEach-Object { $_.results })
+          foreach ($result in $results) {
+            $location = $result.locations[0].physicalLocation
+            Write-Output "::error file=$($location.artifactLocation.uri),line=$($location.region.startLine)::$($result.ruleId) $($result.message.text)"
+          }
+          if ($results.Count -gt 0) { exit 1 }
+
       - name: Run unit tests with coverage
         run: |
           dotnet coverlet Shared.Tests.Unit\bin\Release\net10.0 `
             --target "dotnet" `
-            --targetargs "test --project Shared.Tests.Unit --no-build --configuration Release -- --filter-trait Category=Unit --report-xunit-trx --report-xunit-trx-filename unit-tests.trx --results-directory=Shared.Tests.Unit/bin/Release/net10.0/TestResults" `
+            --targetargs "test --project Shared.Tests.Unit --no-build --configuration Release -- --filter-trait Category=Unit --stop-on-fail on --report-xunit-trx --report-xunit-trx-filename unit-tests.trx --results-directory=Shared.Tests.Unit/bin/Release/net10.0/TestResults" `
             --format opencover --output "coverage.opencover.xml" `
             --skipautoprops `
             --exclude-by-attribute GeneratedCodeAttribute `
