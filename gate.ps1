@@ -15,7 +15,7 @@ Register-GateSteps @('Restore local tools', 'Begin Sonar analysis', 'Restore', '
 $repo = $PSScriptRoot
 $sarif = Join-Path $gateOutput 'shared-inspect.sarif'
 $unitTrx = Join-Path $repo 'Shared.Tests.Unit\bin\Release\net10.0\TestResults\unit-tests.trx'
-$sonarBranch = "local-$($env:COMPUTERNAME.ToLowerInvariant())"
+$sonarBranch = "branch-local-$($env:COMPUTERNAME.ToLowerInvariant())"
 $beginSonar = "Begin Sonar analysis (branch $sonarBranch)"
 $restore = 'Restore (dotnet restore Shared.slnx)'
 $build = 'Build (dotnet build Shared.slnx Release)'
