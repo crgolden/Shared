@@ -53,7 +53,7 @@ else {
 
 if (-not (Test-StepCarried 'jb inspectcode')) {
     if (Test-Path $sarif) { Remove-Item $sarif -Force }
-    dotnet jb inspectcode "$repo\Shared.slnx" --no-build -e=WARNING -o="$sarif"
+    dotnet jb inspectcode "$repo\Shared.slnx" --no-build -e=WARNING --output="$sarif"
     Test-Sarif $sarif
 }
 

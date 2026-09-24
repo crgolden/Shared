@@ -97,7 +97,7 @@ jobs:
 
       - name: ReSharper inspection (jb inspectcode)
         run: |
-          dotnet jb inspectcode Shared.slnx --no-build -e=WARNING -o=inspectcode.sarif
+          dotnet jb inspectcode Shared.slnx --no-build -e=WARNING --output=inspectcode.sarif
           $results = @((Get-Content inspectcode.sarif -Raw | ConvertFrom-Json).runs | ForEach-Object { $_.results })
           foreach ($result in $results) {
             $location = $result.locations[0].physicalLocation
