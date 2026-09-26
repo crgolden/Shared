@@ -25,6 +25,7 @@ $env:TZ = 'UTC'
 if ($env:TZ -ne 'UTC') { Write-Host 'GATE: FAILED (TZ pin)'; exit 1 }
 Set-Location $repo
 Initialize-GateState 'Shared' $repo
+Invoke-CatalogSteps
 
 $global:LASTEXITCODE = $null
 dotnet tool restore
@@ -47,7 +48,7 @@ else {
     $null = Test-Exit $restore
 
     $global:LASTEXITCODE = $null
-    dotnet build Shared.slnx --no-restore --configuration Release
+    dotnet build Shared.slnx --no-restore --configuration Release -warnaserror
     $null = Test-Exit $build
 }
 

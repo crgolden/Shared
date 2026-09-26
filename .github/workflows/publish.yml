@@ -93,7 +93,7 @@ jobs:
         run: dotnet restore Shared.slnx
 
       - name: Build
-        run: dotnet build Shared.slnx --no-restore --configuration Release
+        run: dotnet build Shared.slnx --no-restore --configuration Release -warnaserror
 
       - name: ReSharper inspection (jb inspectcode)
         run: |
