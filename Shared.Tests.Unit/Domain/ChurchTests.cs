@@ -9,12 +9,6 @@ public sealed class ChurchTests
 
     private const int OutOfRangeWorshipStyleOffset = 1;
 
-    public static TheoryData<decimal> OutOfRangeConfidenceScores() => new TheoryData<decimal>
-    {
-        ChurchBuilder.MinConfidenceScore - Generated.NewOutOfRangeOffset(),
-        ChurchBuilder.MaxConfidenceScore + Generated.NewOutOfRangeOffset(),
-    };
-
     [Fact]
     public void Build_AllValidInput_ReturnsChurch()
     {
@@ -188,10 +182,26 @@ public sealed class ChurchTests
         Assert.Equal(nameof(worshipStyle), ex.ParamName);
     }
 
-    [Theory]
-    [MemberData(nameof(OutOfRangeConfidenceScores))]
-    public void WithConfidenceScore_OutOfRange_Throws(decimal confidenceScore)
+    [Fact]
+    public void WithConfidenceScore_BelowMinimum_Throws()
     {
+        // Arrange
+        var confidenceScore = ChurchBuilder.MinConfidenceScore - Generated.NewOutOfRangeOffset();
+
+        // Act
+        var exception = Record.Exception(() => new ChurchBuilder().WithConfidenceScore(confidenceScore));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentOutOfRangeException>(exception);
+        Assert.Equal(nameof(confidenceScore), ex.ParamName);
+    }
+
+    [Fact]
+    public void WithConfidenceScore_AboveMaximum_Throws()
+    {
+        // Arrange
+        var confidenceScore = ChurchBuilder.MaxConfidenceScore + Generated.NewOutOfRangeOffset();
+
         // Act
         var exception = Record.Exception(() => new ChurchBuilder().WithConfidenceScore(confidenceScore));
 

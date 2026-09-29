@@ -11,7 +11,7 @@ $gateOutput = Join-Path ([IO.Path]::GetTempPath()) "crgolden-gates\$(Split-Path 
 New-Item -ItemType Directory -Force -Path $gateOutput | Out-Null
 
 Register-GateSteps @('Restore local tools', 'Begin Sonar analysis', 'Restore', 'Build', 'jb inspectcode',
-    'Run unit tests with coverage', 'End Sonar analysis')
+    'Run unit tests with coverage', 'End Sonar analysis', 'Fail on open Sonar issues')
 $repo = $PSScriptRoot
 $sarif = Join-Path $gateOutput 'shared-inspect.sarif'
 $unitTrx = Join-Path $repo 'Shared.Tests.Unit\bin\Release\net10.0\TestResults\unit-tests.trx'
@@ -20,6 +20,7 @@ $beginSonar = "Begin Sonar analysis (branch $sonarBranch)"
 $restore = 'Restore (dotnet restore Shared.slnx)'
 $build = 'Build (dotnet build Shared.slnx Release)'
 $endSonar = 'End Sonar analysis (quality gate waited)'
+$sonarIssues = 'Fail on open Sonar issues'
 $unitStep = 'Run unit tests with coverage (Category=Unit)'
 $env:TZ = 'UTC'
 if ($env:TZ -ne 'UTC') { Write-Host 'GATE: FAILED (TZ pin)'; exit 1 }
@@ -31,13 +32,15 @@ $global:LASTEXITCODE = $null
 dotnet tool restore
 $null = Test-Exit 'Restore local tools (dotnet tool restore)'
 
-$sonarCarried = Test-StepCarried $endSonar
+$sonarCarried = Test-StepCarried $sonarIssues
 if ($sonarCarried) {
     $null = Test-StepCarried $beginSonar
     $null = Test-StepCarried $restore
     $null = Test-StepCarried $build
+    $null = Test-StepCarried $endSonar
 }
 else {
+    $sonarStartedAt = [DateTimeOffset]::UtcNow
     $env:JAVA_HOME = "$env:SystemDrive\sonar-scanner-8.0.1.6346-windows-x64\jre"
     $global:LASTEXITCODE = $null
     dotnet-sonarscanner begin /k:"crgolden_Shared" /o:"crgolden" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="coverage.opencover.xml" /d:sonar.exclusions="**/bin/**,**/obj/**,**/*.png" /d:sonar.qualitygate.wait=true /d:sonar.scanner.skipJreProvisioning=true /d:sonar.branch.name="$sonarBranch"
@@ -74,6 +77,7 @@ if (-not $sonarCarried) {
     $global:LASTEXITCODE = $null
     dotnet-sonarscanner end /d:sonar.token="$env:SONAR_TOKEN"
     $null = Test-Exit $endSonar
+    Test-SonarIssues $sonarIssues 'crgolden_Shared' $sonarBranch $sonarStartedAt
 }
 
 Write-Row 'Upload test results / pack / push / tag' 'NOT RUN' 'delivery steps, not checks'

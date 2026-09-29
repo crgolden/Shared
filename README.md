@@ -1,3 +1,7 @@
+[![Build, test, and publish Shared package](https://github.com/crgolden/Shared/actions/workflows/publish.yml/badge.svg)](https://github.com/crgolden/Shared/actions/workflows/publish.yml)
+
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=crgolden_Shared)](https://sonarcloud.io/summary/new_code?id=crgolden_Shared)
+
 # Shared
 
 Cross-app shared library for the `crgolden` fleet, published as a **private** NuGet package to the `crgolden` GitHub Packages feed. Not intended for public consumption — only ever needed for local development or CI builds of the repos that reference it.

@@ -5,12 +5,6 @@ using Shared.Domain;
 [Trait("Category", "Unit")]
 public sealed class ChurchAttributeTests
 {
-    public static TheoryData<decimal> OutOfRangeConfidences() => new TheoryData<decimal>
-    {
-        ChurchAttributeBuilder.MinConfidence - Generated.NewOutOfRangeOffset(),
-        ChurchAttributeBuilder.MaxConfidence + Generated.NewOutOfRangeOffset(),
-    };
-
     [Fact]
     public void Build_AllValidInput_ReturnsChurchAttribute()
     {
@@ -96,10 +90,26 @@ public sealed class ChurchAttributeTests
         Assert.Equal(nameof(source), ex.ParamName);
     }
 
-    [Theory]
-    [MemberData(nameof(OutOfRangeConfidences))]
-    public void WithConfidence_OutOfRange_Throws(decimal confidence)
+    [Fact]
+    public void WithConfidence_BelowMinimum_Throws()
     {
+        // Arrange
+        var confidence = ChurchAttributeBuilder.MinConfidence - Generated.NewOutOfRangeOffset();
+
+        // Act
+        var exception = Record.Exception(() => new ChurchAttributeBuilder().WithConfidence(confidence));
+
+        // Assert
+        var ex = Assert.IsType<ArgumentOutOfRangeException>(exception);
+        Assert.Equal(nameof(confidence), ex.ParamName);
+    }
+
+    [Fact]
+    public void WithConfidence_AboveMaximum_Throws()
+    {
+        // Arrange
+        var confidence = ChurchAttributeBuilder.MaxConfidence + Generated.NewOutOfRangeOffset();
+
         // Act
         var exception = Record.Exception(() => new ChurchAttributeBuilder().WithConfidence(confidence));
 
