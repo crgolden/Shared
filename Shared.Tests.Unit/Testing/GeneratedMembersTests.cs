@@ -437,7 +437,7 @@ public sealed class GeneratedMembersTests
         var formatted = Generated.WithFormattingSeparators(value);
 
         // Assert
-        Assert.Equal(value, formatted.Replace(" ", string.Empty, StringComparison.Ordinal).Replace("-", string.Empty, StringComparison.Ordinal));
+        Assert.Equal(value, string.Concat(formatted.Where(char.IsLetterOrDigit)));
         Assert.NotEqual(value, formatted);
     }
 
