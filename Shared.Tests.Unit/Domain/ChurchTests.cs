@@ -18,7 +18,7 @@ public sealed class ChurchTests
         var state = Generated.NewStateCode();
 
         // Act
-        var church = Build(canonicalName: canonicalName, city: city, state: state);
+        var church = PopulatedBuilder().WithCanonicalName(canonicalName).WithCity(city).WithState(state).Build();
 
         // Assert
         Assert.Equal(canonicalName, church.CanonicalName);
@@ -162,7 +162,7 @@ public sealed class ChurchTests
     public void Build_ZeroZeroCoordinates_IsAllowed()
     {
         // Act
-        var church = Build(latitude: 0, longitude: 0);
+        var church = PopulatedBuilder().WithLatitude(0).WithLongitude(0).Build();
 
         // Assert
         Assert.Equal(0, church.Latitude);
@@ -243,7 +243,7 @@ public sealed class ChurchTests
         var createdAtInSourceOffset = Generated.NewTimestampWithNonZeroOffset();
 
         // Act
-        var church = Build(createdAt: createdAtInSourceOffset);
+        var church = PopulatedBuilder().WithCreatedAt(createdAtInSourceOffset).Build();
 
         // Assert
         Assert.Equal(createdAtInSourceOffset.UtcDateTime, church.CreatedAt.UtcDateTime);
@@ -256,7 +256,7 @@ public sealed class ChurchTests
         var createdAtInSourceOffset = Generated.NewTimestampWithNonZeroOffset();
 
         // Act
-        var church = Build(createdAt: createdAtInSourceOffset);
+        var church = PopulatedBuilder().WithCreatedAt(createdAtInSourceOffset).Build();
 
         // Assert
         Assert.Equal(createdAtInSourceOffset.Offset, church.CreatedAt.Offset);
@@ -298,7 +298,7 @@ public sealed class ChurchTests
         var createdAtInUtc = Generated.NewUtcTimestamp();
 
         // Act
-        var church = Build(createdAt: createdAtInUtc);
+        var church = PopulatedBuilder().WithCreatedAt(createdAtInUtc).Build();
 
         // Assert
         Assert.Equal(TimeSpan.Zero, church.CreatedAt.Offset);
@@ -342,38 +342,24 @@ public sealed class ChurchTests
         Assert.Contains(nameof(ChurchBuilder.WithCity), ex.Message, StringComparison.Ordinal);
     }
 
-    private static Church Build(
-        Guid? id = null,
-        string? canonicalName = null,
-        string? slug = null,
-        double? latitude = null,
-        double? longitude = null,
-        string? city = null,
-        StateCode? state = null,
-        string? zip = null,
-        int? worshipStyle = null,
-        string? primaryLanguage = null,
-        decimal? confidenceScore = null,
-        DateTimeOffset? createdAt = null,
-        DateTimeOffset? updatedAt = null)
+    private static ChurchBuilder PopulatedBuilder()
     {
         var generatedChurchId = Guid.NewGuid();
 
         return new ChurchBuilder()
-            .WithId(id ?? generatedChurchId)
-            .WithCanonicalName(canonicalName ?? Generated.NewName())
-            .WithSlug(slug ?? Generated.NewSlug())
-            .WithLatitude(latitude ?? Generated.NewLatitude())
-            .WithLongitude(longitude ?? Generated.NewLongitude())
+            .WithId(generatedChurchId)
+            .WithCanonicalName(Generated.NewName())
+            .WithSlug(Generated.NewSlug())
+            .WithLatitude(Generated.NewLatitude())
+            .WithLongitude(Generated.NewLongitude())
             .WithStreet(Generated.NewStreet())
-            .WithCity(city ?? Generated.NewCity())
-            .WithState(state ?? Generated.NewStateCode())
-            .WithZip(zip ?? Generated.NewZip())
-            .WithWorshipStyle(worshipStyle ?? Generated.NewWorshipStyleCode())
-            .WithPrimaryLanguage(primaryLanguage ?? Generated.NewLanguage())
-            .WithConfidenceScore(confidenceScore ?? Generated.NewRoundedFraction(ChurchBuilder.ConfidenceScoreScale))
-            .WithCreatedAt(createdAt ?? Generated.NewUtcTimestamp())
-            .WithUpdatedAt(updatedAt ?? Generated.NewUtcTimestamp())
-            .Build();
+            .WithCity(Generated.NewCity())
+            .WithState(Generated.NewStateCode())
+            .WithZip(Generated.NewZip())
+            .WithWorshipStyle(Generated.NewWorshipStyleCode())
+            .WithPrimaryLanguage(Generated.NewLanguage())
+            .WithConfidenceScore(Generated.NewRoundedFraction(ChurchBuilder.ConfidenceScoreScale))
+            .WithCreatedAt(Generated.NewUtcTimestamp())
+            .WithUpdatedAt(Generated.NewUtcTimestamp());
     }
 }

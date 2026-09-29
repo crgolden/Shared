@@ -16,7 +16,7 @@ public sealed class CampusTests
         var campusState = Generated.NewStateCode();
 
         // Act
-        var campus = Build(name: campusName, city: campusCity, state: campusState);
+        var campus = PopulatedBuilder().WithName(campusName).WithCity(campusCity).WithState(campusState).Build();
 
         // Assert
         Assert.Equal(campusName, campus.Name);
@@ -194,33 +194,22 @@ public sealed class CampusTests
         Assert.Contains(nameof(CampusBuilder.WithCity), ex.Message, StringComparison.Ordinal);
     }
 
-    private static Campus Build(
-        Guid? id = null,
-        Guid? churchId = null,
-        string? name = null,
-        string? city = null,
-        StateCode? state = null,
-        string? zip = null,
-        double? latitude = null,
-        double? longitude = null,
-        DateTimeOffset? createdAt = null,
-        DateTimeOffset? updatedAt = null)
+    private static CampusBuilder PopulatedBuilder()
     {
         var generatedCampusId = Guid.NewGuid();
         var generatedChurchId = Guid.NewGuid();
 
         return new CampusBuilder()
-            .WithId(id ?? generatedCampusId)
-            .WithChurchId(churchId ?? generatedChurchId)
-            .WithName(name ?? Generated.NewName())
+            .WithId(generatedCampusId)
+            .WithChurchId(generatedChurchId)
+            .WithName(Generated.NewName())
             .WithStreet(Generated.NewStreet())
-            .WithCity(city ?? Generated.NewCity())
-            .WithState(state ?? Generated.NewStateCode())
-            .WithZip(zip ?? Generated.NewZip())
-            .WithLatitude(latitude ?? Generated.NewLatitude())
-            .WithLongitude(longitude ?? Generated.NewLongitude())
-            .WithCreatedAt(createdAt ?? Generated.NewUtcTimestamp())
-            .WithUpdatedAt(updatedAt ?? Generated.NewUtcTimestamp())
-            .Build();
+            .WithCity(Generated.NewCity())
+            .WithState(Generated.NewStateCode())
+            .WithZip(Generated.NewZip())
+            .WithLatitude(Generated.NewLatitude())
+            .WithLongitude(Generated.NewLongitude())
+            .WithCreatedAt(Generated.NewUtcTimestamp())
+            .WithUpdatedAt(Generated.NewUtcTimestamp());
     }
 }

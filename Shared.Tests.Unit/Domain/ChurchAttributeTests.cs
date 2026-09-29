@@ -13,7 +13,7 @@ public sealed class ChurchAttributeTests
         var attributeValue = Generated.NewName();
 
         // Act
-        var attribute = Build(key: attributeKey, value: attributeValue);
+        var attribute = PopulatedBuilder().WithKey(attributeKey).WithValue(attributeValue).Build();
 
         // Assert
         Assert.Equal(attributeKey, attribute.Key);
@@ -174,28 +174,19 @@ public sealed class ChurchAttributeTests
         Assert.Contains(nameof(ChurchAttributeBuilder.WithSource), ex.Message, StringComparison.Ordinal);
     }
 
-    private static ChurchAttribute Build(
-        Guid? id = null,
-        Guid? churchId = null,
-        string? key = null,
-        string? value = null,
-        string? source = null,
-        decimal? confidence = null,
-        DateTimeOffset? createdAt = null,
-        DateTimeOffset? updatedAt = null)
+    private static ChurchAttributeBuilder PopulatedBuilder()
     {
         var generatedAttributeId = Guid.NewGuid();
         var generatedChurchId = Guid.NewGuid();
 
         return new ChurchAttributeBuilder()
-            .WithId(id ?? generatedAttributeId)
-            .WithChurchId(churchId ?? generatedChurchId)
-            .WithKey(key ?? Generated.NewAttributeKey())
-            .WithValue(value ?? Generated.NewName())
-            .WithSource(source ?? Generated.NewAttributeSource())
-            .WithConfidence(confidence ?? Generated.NewRoundedFraction(ChurchAttributeBuilder.ConfidenceScale))
-            .WithCreatedAt(createdAt ?? Generated.NewUtcTimestamp())
-            .WithUpdatedAt(updatedAt ?? Generated.NewUtcTimestamp())
-            .Build();
+            .WithId(generatedAttributeId)
+            .WithChurchId(generatedChurchId)
+            .WithKey(Generated.NewAttributeKey())
+            .WithValue(Generated.NewName())
+            .WithSource(Generated.NewAttributeSource())
+            .WithConfidence(Generated.NewRoundedFraction(ChurchAttributeBuilder.ConfidenceScale))
+            .WithCreatedAt(Generated.NewUtcTimestamp())
+            .WithUpdatedAt(Generated.NewUtcTimestamp());
     }
 }
