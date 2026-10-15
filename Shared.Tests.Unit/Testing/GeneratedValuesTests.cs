@@ -20,6 +20,17 @@ public sealed class GeneratedValuesTests
     }
 
     [Fact]
+    public void NewPasswordHash_Generated_HasTheIdentityV3Shape()
+    {
+        // Act
+        var hash = Convert.FromBase64String(Generated.NewPasswordHash());
+
+        // Assert
+        Assert.Equal(Generated.IdentityV3HashLength, hash.Length);
+        Assert.Equal(Generated.IdentityV3HashFormatMarker, hash[0]);
+    }
+
+    [Fact]
     public void NewUtcTimestamp_Generated_IsUtcAndInThePast()
     {
         // Act

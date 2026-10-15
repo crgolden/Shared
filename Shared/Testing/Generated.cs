@@ -12,6 +12,10 @@ using Shared.Domain;
 [PublicAPI]
 public static class Generated
 {
+    public const byte IdentityV3HashFormatMarker = 0x01;
+
+    public const int IdentityV3HashLength = 61;
+
     private const int SmallestBlankLength = 1;
     private const int LargestBlankLength = 4;
     private const int LargestPrice = 1000;
@@ -793,6 +797,13 @@ public static class Generated
     public static string NewLogoutId() => Guid.NewGuid().ToString("N");
 
     public static string NewReferenceValueHash() => Guid.NewGuid().ToString("N");
+
+    public static string NewPasswordHash()
+    {
+        var hash = NewByteSequence(IdentityV3HashLength);
+        hash[0] = IdentityV3HashFormatMarker;
+        return Convert.ToBase64String(hash);
+    }
 
     public static byte[] NewByteSequence(int length)
     {
