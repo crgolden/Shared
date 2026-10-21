@@ -4,33 +4,88 @@
 
 # Shared
 
-Cross-app shared library for the `crgolden` fleet, published as a **private** NuGet package to the `crgolden` GitHub Packages feed. Not intended for public consumption — only ever needed for local development or CI builds of the repos that reference it.
+A .NET class library published as the NuGet package `Shared` to the `crgolden` GitHub Packages feed. It holds
+self-validating domain entities for a church directory, two small extension classes, and the test-support code
+(`Shared.Testing`) that test projects use to generate their data. The package is public; GitHub Packages still asks
+for a token to read any package, public or not.
 
-## Contents
+How the parts fit together, and the rules each one keeps: [ARCHITECTURE.md](ARCHITECTURE.md). How to run the tests:
+[TESTING.md](TESTING.md).
 
-- `ServiceCollectionExtensions.AddObservability()` — configures `AspNetCoreTraceInstrumentationOptions` to exclude `/health` requests from tracing.
-- `Shared.Domain` — self-validating domain entities (`Church`, `Campus`, `Ministry`, `ServiceSchedule`, `ChurchAttribute`) mirroring the `Directory` church-database schema. Bad input fails fast with a specific `ArgumentException`/`ArgumentOutOfRangeException` instead of surfacing as a raw SQL constraint violation deep inside a write path.
+## Technologies
 
-### The builder pattern
+- .NET 10 (C# 14), one class library (`Shared/Shared.csproj`) and one unit-test project (`Shared.Tests.Unit`).
+- xUnit v3 on Microsoft.Testing.Platform for tests, coverlet for coverage.
+- StyleCop.Analyzers, SonarAnalyzer.CSharp and ReSharper's `jb inspectcode`, with warnings treated as errors.
+- GitVersion for preview version numbers; SonarCloud for CI analysis.
 
-Each entity (`Church`, `Campus`, `Ministry`, `ServiceSchedule`, `ChurchAttribute`) follows the same shape: an internal parameterless constructor and `internal init` properties mean the entity can only ever be populated by its matching builder (e.g. `ChurchBuilder` for `Church`) — an external assembly can't construct one via an object initializer and bypass validation.
+## Prerequisites
 
-The builder validates one field at a time. Each `With*` call checks that field immediately and returns the builder for chaining; `Build()` only checks that every required field was set, since each one was already validated the moment it was supplied. The result: a caller gets an immediate, specific exception pointing at exactly the bad field, rather than a raw SQL constraint violation three layers away from the input that caused it.
+- The .NET 10 SDK: `global.json` pins `10.0.201` and rolls forward to the latest feature band.
+- Nothing else for building and testing: every package this repo restores comes from nuget.org (`NuGet.Config` maps
+  `*` to nuget.org), so no GitHub token is needed to build it.
 
-## Building and testing
+## Clone and build
 
 ```powershell
+git clone https://github.com/crgolden/Shared.git
+cd Shared
+dotnet tool restore
 dotnet build Shared.slnx
-dotnet test Shared.Tests.Unit --filter-trait Category=Unit
 ```
+
+## Configuration
+
+The library reads no configuration of its own and needs no secrets. `Shared.snk` (the strong-name key) is tracked
+on purpose: strong-naming identifies the assembly, it is not a security boundary.
+
+## Run locally
+
+There is no application to run. A consuming project references the package:
+
+```xml
+<PackageReference Include="Shared" Version="x.y.z" />
+```
+
+and restores it from `https://nuget.pkg.github.com/crgolden/index.json` with a GitHub token that has the
+`read:packages` scope, configured as that source's credentials in the consumer's own NuGet settings.
+
+## Tests
+
+```powershell
+dotnet test --project Shared.Tests.Unit --configuration Release -- --filter-trait "Category=Unit"
+```
+
+The unit tier needs no network, database or secrets. [TESTING.md](TESTING.md) has the CI steps and coverage.
+
+## Gate
+
+`gate.ps1` is the maintainers' gate. It loads a private toolkit from a folder beside this repo, so in a plain clone it
+stops at once with `GATE: FAILED`. To gate your own change, run the same checks CI runs, in this order, in your own
+script or by hand:
+
+```powershell
+dotnet tool restore
+dotnet restore Shared.slnx
+dotnet build Shared.slnx --no-restore --configuration Release -warnaserror
+dotnet jb inspectcode Shared.slnx --no-build -e=WARNING --output=inspectcode.sarif
+dotnet test --project Shared.Tests.Unit --no-build --configuration Release -- --filter-trait "Category=Unit"
+```
+
+`jb inspectcode` passes only when `inspectcode.sarif` holds no results.
 
 ## Versioning and publishing
 
-`.github/workflows/publish.yml` builds and runs unit tests on every push and PR. Publishing then splits into two paths:
+`.github/workflows/publish.yml` builds, inspects and tests every push and pull request, then publishes on two paths:
 
-- **Automatic preview builds** — every push to `main` computes a version with [GitVersion](https://gitversion.net/) (config: `GitVersion.yml`, tool pinned in `dotnet-tools.json`) and publishes it immediately. The base number is the next semver above the last `v*` release tag: a default patch bump, or `+semver: minor` / `+semver: major` in a commit message to bump further (`+semver: none` to skip entirely). That number gets a `-preview.<N>` suffix, where `<N>` is the count of commits since the last release tag.
-- **Manual stable releases** — trigger the workflow manually (`workflow_dispatch`) to cut a real release. It reads the version straight from `Shared/Shared.csproj`'s `<Version>` element (bump that by hand first), publishes that exact number with no pre-release suffix, and pushes a matching `v<version>` git tag. That tag is both the release record and the reset point for the next automatic preview build's commit counter.
+- **Every push to `main`** (`publish-preview`): GitVersion (`GitVersion.yml`, tool pinned in `dotnet-tools.json`)
+  computes the next version above the last `v*` tag: a patch bump by default, `+semver: minor` or `+semver: major` in a
+  commit message to bump further, `+semver: none` to skip. In `ContinuousDeployment` mode the number carries no
+  pre-release label, so the package is a plain `X.Y.Z`. The push uses `--skip-duplicate`, so only the first push after
+  a release tag publishes a new version.
+- **A manual run** (`workflow_dispatch`, `publish-release`): packs the `<Version>` in `Shared/Shared.csproj` as is
+  (bump it first) and pushes the tag `v<version>`, which becomes the base for the next computed version.
 
-Both paths push to the private `crgolden` GitHub Packages feed (`https://nuget.pkg.github.com/crgolden/index.json`, already configured in `NuGet.Config`).
-
-The workflow checks out the full history rather than a shallow clone, because two separate steps need it: GitVersion counts commits back to the last release tag to build the preview suffix, and SonarCloud reads git blame to attribute new code. A shallow clone breaks the first loudly and degrades the second silently.
+To predict the next computed version locally: `dotnet tool restore`, then `dotnet dotnet-gitversion /showvariable FullSemVer`.
+Both publish jobs need the full history (`fetch-depth: 0`): GitVersion walks back to the last tag, and SonarCloud
+reads blame to find new code.
