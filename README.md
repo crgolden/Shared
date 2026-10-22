@@ -60,8 +60,10 @@ The unit tier needs no network, database or secrets. [TESTING.md](TESTING.md) ha
 
 ## Gate
 
-`gate.ps1` is the maintainers' gate. It loads a private toolkit from a folder beside this repo, so in a plain clone it
-stops at once with `GATE: FAILED`. To gate your own change, run the same checks CI runs, in this order, in your own
+`gate.ps1` is the maintainers' gate. It dot-sources the gate library script that the `GATE_LIBRARY` environment
+variable names, which defines the step functions `gate.ps1` calls; unset, as in a plain clone, it stops at once with
+`GATE: FAILED` and records nothing. To gate with a library of your own, set `GATE_LIBRARY` to its path; it must
+define every function `gate.ps1` calls, since those functions decide whether each step ran and passed. To gate your own change without one, run the same checks CI runs, in this order, in your own
 script or by hand:
 
 ```powershell
@@ -74,9 +76,9 @@ dotnet test --project Shared.Tests.Unit --no-build --configuration Release -- --
 
 `jb inspectcode` passes only when `inspectcode.sarif` holds no results.
 
-## Versioning and publishing
+## Deployment
 
-`.github/workflows/publish.yml` builds, inspects and tests every push and pull request, then publishes on two paths:
+This package deploys by publishing to the `crgolden` GitHub Packages NuGet feed. `.github/workflows/publish.yml` builds, inspects and tests every push and pull request, then publishes on two paths:
 
 - **Every push to `main`** (`publish-preview`): GitVersion (`GitVersion.yml`, tool pinned in `dotnet-tools.json`)
   computes the next version above the last `v*` tag: a patch bump by default, `+semver: minor` or `+semver: major` in a
