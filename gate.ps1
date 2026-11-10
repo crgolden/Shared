@@ -74,7 +74,7 @@ Invoke-CatalogSteps
 
 $global:LASTEXITCODE = $null
 dotnet tool restore
-$null = Test-Exit 'Restore local tools (dotnet tool restore)'
+Assert-StepExit 'Restore local tools (dotnet tool restore)'
 
 $sonarCarried = Test-StepCarried $sonarIssues
 if ($sonarCarried) {
@@ -88,15 +88,15 @@ else {
     $env:JAVA_HOME = Get-SonarScannerJavaHome $beginSonar
     $global:LASTEXITCODE = $null
     dotnet-sonarscanner begin /k:"crgolden_Shared" /o:"crgolden" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="coverage.opencover.xml" /d:sonar.exclusions="**/bin/**,**/obj/**,**/*.png" /d:sonar.qualitygate.wait=true /d:sonar.scanner.skipJreProvisioning=true /d:sonar.branch.name="$sonarBranch"
-    $null = Test-Exit $beginSonar
+    Assert-StepExit $beginSonar
 
     $global:LASTEXITCODE = $null
     dotnet restore Shared.slnx
-    $null = Test-Exit $restore
+    Assert-StepExit $restore
 
     $global:LASTEXITCODE = $null
     dotnet build Shared.slnx --no-restore --configuration Release -warnaserror
-    $null = Test-Exit $build
+    Assert-StepExit $build
 }
 
 if (-not (Test-StepCarried 'jb inspectcode')) {
@@ -120,7 +120,7 @@ if (-not (Test-StepCarried $unitStep)) {
 if (-not $sonarCarried) {
     $global:LASTEXITCODE = $null
     dotnet-sonarscanner end
-    $null = Test-Exit $endSonar
+    Assert-StepExit $endSonar
     Test-SonarIssues $sonarIssues 'crgolden_Shared' $sonarBranch $sonarStartedAt
 }
 
