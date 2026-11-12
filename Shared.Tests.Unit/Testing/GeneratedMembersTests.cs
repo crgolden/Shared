@@ -7,11 +7,13 @@ using System.Reflection;
 public sealed class GeneratedMembersTests
 {
     public static TheoryData<string> ParameterlessGenerators() =>
-        [.. typeof(Generated)
-            .GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
-            .Where(method => method.GetParameters().Length == 0 && !method.IsGenericMethodDefinition && !method.IsSpecialName)
-            .Select(method => method.Name)
-            .Distinct(StringComparer.Ordinal)];
+        [
+            .. typeof(Generated)
+                .GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
+                .Where(method => method.GetParameters().Length == 0 && !method.IsGenericMethodDefinition && !method.IsSpecialName)
+                .Select(method => method.Name)
+                .Distinct(StringComparer.Ordinal),
+        ];
 
     [Theory]
     [MemberData(nameof(ParameterlessGenerators))]
