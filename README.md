@@ -14,14 +14,14 @@ How the parts fit together, and the rules each one keeps: [ARCHITECTURE.md](ARCH
 
 ## Technologies
 
-- .NET 10 (C# 14), one class library (`Shared/Shared.csproj`) and one unit-test project (`Shared.Tests.Unit`).
+- .NET 11 (C# 15), one class library (`Shared/Shared.csproj`) and one unit-test project (`Shared.Tests.Unit`).
 - xUnit v3 on Microsoft.Testing.Platform for tests, coverlet for coverage.
 - StyleCop.Analyzers, SonarAnalyzer.CSharp and ReSharper's `jb inspectcode`, with warnings treated as errors.
 - GitVersion for preview version numbers; SonarCloud for CI analysis.
 
 ## Prerequisites
 
-- The .NET 10 SDK: `global.json` pins `10.0.201` and rolls forward to the latest feature band.
+- The .NET 11 SDK: `global.json` pins `11.0.100` and rolls forward to the latest feature band.
 - Nothing else for building and testing: every package this repo restores comes from nuget.org (`NuGet.Config` maps
   `*` to nuget.org), so no GitHub token is needed to build it.
 

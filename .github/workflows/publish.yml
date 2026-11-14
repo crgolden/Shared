@@ -61,7 +61,7 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '10.x'
+          dotnet-version: '11.x'
 
       - name: Cache dotnet global tools
         id: cache-dotnet-tools
@@ -113,9 +113,9 @@ jobs:
       - name: Run unit tests with coverage
         run: |
           $arguments = @(
-            'Shared.Tests.Unit/bin/Release/net10.0'
+            'Shared.Tests.Unit/bin/Release/net11.0'
             '--target', 'dotnet'
-            '--targetargs', 'test --project Shared.Tests.Unit --no-build --configuration Release -- --filter-trait Category=Unit --stop-on-fail on --report-xunit-trx --report-xunit-trx-filename unit-tests.trx --results-directory=Shared.Tests.Unit/bin/Release/net10.0/TestResults'
+            '--targetargs', 'test --project Shared.Tests.Unit --no-build --configuration Release -- --filter-trait Category=Unit --stop-on-fail on --report-xunit-trx --report-xunit-trx-filename unit-tests.trx --results-directory=Shared.Tests.Unit/bin/Release/net11.0/TestResults'
             '--format', 'opencover', '--output', 'coverage.opencover.xml'
             '--skipautoprops'
             '--exclude-by-attribute', 'GeneratedCodeAttribute'
@@ -131,7 +131,7 @@ jobs:
         with:
           name: test-results
           if-no-files-found: error
-          path: Shared.Tests.Unit/bin/Release/net10.0/TestResults/
+          path: Shared.Tests.Unit/bin/Release/net11.0/TestResults/
 
       - name: End Sonar analysis
         if: github.actor != 'dependabot[bot]'
@@ -174,7 +174,7 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '10.x'
+          dotnet-version: '11.x'
 
       - name: Restore local tools
         run: dotnet tool restore
@@ -210,7 +210,7 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '10.x'
+          dotnet-version: '11.x'
 
       - name: Read release version from Shared.csproj
         id: version

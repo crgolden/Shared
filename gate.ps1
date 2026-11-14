@@ -27,7 +27,7 @@ Register-StepInputs @{
 }
 $repo = $PSScriptRoot
 $sarif = Join-Path $gateOutput 'shared-inspect.sarif'
-$unitTrx = Join-Path $repo 'Shared.Tests.Unit\bin\Release\net10.0\TestResults\unit-tests.trx'
+$unitTrx = Join-Path $repo 'Shared.Tests.Unit\bin\Release\net11.0\TestResults\unit-tests.trx'
 $sonarBranch = Get-SonarBranchName
 $beginSonar = "Begin Sonar analysis (branch $sonarBranch)"
 $restore = 'Restore (dotnet restore Shared.slnx)'
@@ -108,9 +108,9 @@ if (-not (Test-StepCarried 'jb inspectcode')) {
 if (-not (Test-StepCarried $unitStep)) {
     if (Test-Path $unitTrx) { Remove-Item $unitTrx -Force }
     $global:LASTEXITCODE = $null
-    dotnet coverlet Shared.Tests.Unit\bin\Release\net10.0 `
+    dotnet coverlet Shared.Tests.Unit\bin\Release\net11.0 `
         --target "dotnet" `
-        --targetargs "test --project Shared.Tests.Unit --no-build --configuration Release -- --filter-trait Category=Unit --stop-on-fail on --report-xunit-trx --report-xunit-trx-filename unit-tests.trx --results-directory=Shared.Tests.Unit/bin/Release/net10.0/TestResults" `
+        --targetargs "test --project Shared.Tests.Unit --no-build --configuration Release -- --filter-trait Category=Unit --stop-on-fail on --report-xunit-trx --report-xunit-trx-filename unit-tests.trx --results-directory=Shared.Tests.Unit/bin/Release/net11.0/TestResults" `
         --format opencover --output "coverage.opencover.xml" `
         --skipautoprops --exclude-by-attribute GeneratedCodeAttribute --exclude-by-file "**/obj/**" `
         --does-not-return-attribute DoesNotReturnAttribute --include "[Shared]*"

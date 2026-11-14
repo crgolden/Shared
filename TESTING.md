@@ -26,7 +26,7 @@ With coverage, as CI measures it (`coverlet.console` is pinned in `dotnet-tools.
 
 ```powershell
 dotnet tool restore
-dotnet coverlet Shared.Tests.Unit/bin/Release/net10.0 `
+dotnet coverlet Shared.Tests.Unit/bin/Release/net11.0 `
   --target "dotnet" `
   --targetargs "test --project Shared.Tests.Unit --no-build --configuration Release -- --filter-trait Category=Unit --stop-on-fail on" `
   --format opencover --output "coverage.opencover.xml" `
