@@ -28,7 +28,7 @@ With coverage, as CI measures it (`coverlet.console` is pinned in `dotnet-tools.
 dotnet tool restore
 dotnet coverlet Shared.Tests.Unit/bin/Release/net11.0 `
   --target "dotnet" `
-  --targetargs "test --project Shared.Tests.Unit --no-build --configuration Release -- --filter-trait Category=Unit --stop-on-fail on" `
+  --targetargs "test --project Shared.Tests.Unit --no-build --configuration Release -- --filter-trait Category=Unit" `
   --format opencover --output "coverage.opencover.xml" `
   --skipautoprops --exclude-by-attribute GeneratedCodeAttribute --exclude-by-file "**/obj/**" `
   --does-not-return-attribute DoesNotReturnAttribute --include "[Shared]*"
@@ -40,7 +40,7 @@ Coverage counts only the `Shared` assembly (`--include "[Shared]*"`), never the 
 
 The `build` job in `.github/workflows/publish.yml` runs on every push and pull request: restore local tools, begin
 SonarCloud analysis, restore, Release build with `-warnaserror`, `dotnet jb inspectcode` (any result in the SARIF fails
-the job), the unit tier under coverlet with `--stop-on-fail on`, upload of the test results, end of the analysis with
+the job), the unit tier under coverlet, every test run to its end, upload of the test results, end of the analysis with
 the quality gate waited, and a final step that fails while SonarCloud reports any open issue. The SonarCloud steps
 skip Dependabot's pull requests, which get no secrets.
 

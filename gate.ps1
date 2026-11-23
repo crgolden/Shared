@@ -53,7 +53,7 @@ if ($Only) {
     if (Test-Path -LiteralPath $probeTrx) { Remove-Item -LiteralPath $probeTrx -Force }
     Write-Host "PROBE: running one test, '$probeTest' of $probeClass in $probeProject; no gate record or verdict is written"
     $global:LASTEXITCODE = $null
-    dotnet test --project $probeProject --no-build --configuration Release -- --filter-query "/*/*/$probeClass/$probeTest" --report-xunit-trx --report-xunit-trx-filename probe.trx --results-directory=$probeResults
+    dotnet test --project $probeProject --configuration Release -- --filter-query "/*/*/$probeClass/$probeTest" --report-xunit-trx --report-xunit-trx-filename probe.trx --results-directory=$probeResults
     $probeExit = $global:LASTEXITCODE
     if (-not (Test-Path -LiteralPath $probeTrx)) { Write-Host "PROBE: FAILED (no TRX, exit $probeExit)"; exit 1 }
     [xml]$probeDoc = Get-Content -LiteralPath $probeTrx -Raw
@@ -70,9 +70,12 @@ Initialize-GateState 'Shared' $repo
 Get-OwedStep | Register-OwedStep
 Invoke-GateLibraryStep
 
-$global:LASTEXITCODE = $null
-dotnet tool restore
-Assert-StepExit 'Restore local tools (dotnet tool restore)'
+$toolRestore = 'Restore local tools (dotnet tool restore)'
+Invoke-GateStep -Name $toolRestore -Body {
+    $global:LASTEXITCODE = $null
+    dotnet tool restore
+    Assert-StepExit $toolRestore
+}
 
 $sonarCarried = Test-StepCarried $sonarIssues
 if ($sonarCarried) {
@@ -83,32 +86,38 @@ if ($sonarCarried) {
 }
 else {
     $sonarStartedAt = [DateTimeOffset]::UtcNow
-    $env:JAVA_HOME = Get-SonarScannerJavaHome $beginSonar
-    $global:LASTEXITCODE = $null
-    dotnet-sonarscanner begin /k:"crgolden_Shared" /o:"crgolden" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="coverage.opencover.xml" /d:sonar.exclusions="**/bin/**,**/obj/**,**/*.png" /d:sonar.qualitygate.wait=true /d:sonar.scanner.skipJreProvisioning=true /d:sonar.scm.use.blame.algorithm=GIT_NATIVE_BLAME /d:sonar.branch.name="$sonarBranch"
-    Assert-StepExit $beginSonar
+    Invoke-GateStep -Name $beginSonar -Always -Body {
+        $env:JAVA_HOME = Get-SonarScannerJavaHome $beginSonar
+        $global:LASTEXITCODE = $null
+        dotnet-sonarscanner begin /k:"crgolden_Shared" /o:"crgolden" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="coverage.opencover.xml" /d:sonar.exclusions="**/bin/**,**/obj/**,**/*.png" /d:sonar.qualitygate.wait=true /d:sonar.scanner.skipJreProvisioning=true /d:sonar.scm.use.blame.algorithm=GIT_NATIVE_BLAME /d:sonar.branch.name="$sonarBranch"
+        Assert-StepExit $beginSonar
+    }
 
-    $global:LASTEXITCODE = $null
-    dotnet restore Shared.slnx
-    Assert-StepExit $restore
+    Invoke-GateStep -Name $restore -Always -Body {
+        $global:LASTEXITCODE = $null
+        dotnet restore Shared.slnx
+        Assert-StepExit $restore
+    }
 
-    $global:LASTEXITCODE = $null
-    dotnet build Shared.slnx --no-restore --configuration Release -warnaserror
-    Assert-StepExit $build
+    Invoke-GateStep -Name $build -Needs @($restore) -Always -Body {
+        $global:LASTEXITCODE = $null
+        dotnet build Shared.slnx --no-restore --configuration Release -warnaserror
+        Assert-StepExit $build
+    }
 }
 
-if (-not (Test-StepCarried 'jb inspectcode')) {
+Invoke-GateStep -Name 'jb inspectcode' -Needs @($build, $toolRestore) -Body {
     if (Test-Path $sarif) { Remove-Item $sarif -Force }
     dotnet jb inspectcode "$repo\Shared.slnx" --no-build -e=WARNING --caches-home="$(New-InspectCodeCache $gateOutput)" --output="$sarif"
     Test-Sarif $sarif
 }
 
-if (-not (Test-StepCarried $unitStep)) {
+Invoke-GateStep -Name $unitStep -Needs @($build, $toolRestore) -Body {
     if (Test-Path $unitTrx) { Remove-Item $unitTrx -Force }
     $global:LASTEXITCODE = $null
     dotnet coverlet Shared.Tests.Unit\bin\Release\net11.0 `
         --target "dotnet" `
-        --targetargs "test --project Shared.Tests.Unit --no-build --configuration Release -- --filter-trait Category=Unit --stop-on-fail on --report-xunit-trx --report-xunit-trx-filename unit-tests.trx --results-directory=Shared.Tests.Unit/bin/Release/net11.0/TestResults" `
+        --targetargs "test --project Shared.Tests.Unit --no-build --configuration Release -- --filter-trait Category=Unit --report-xunit-trx --report-xunit-trx-filename unit-tests.trx --results-directory=Shared.Tests.Unit/bin/Release/net11.0/TestResults" `
         --format opencover --output "coverage.opencover.xml" `
         --skipautoprops --exclude-by-attribute GeneratedCodeAttribute --exclude-by-file "**/obj/**" `
         --does-not-return-attribute DoesNotReturnAttribute --include "[Shared]*"
@@ -116,10 +125,14 @@ if (-not (Test-StepCarried $unitStep)) {
 }
 
 if (-not $sonarCarried) {
-    $global:LASTEXITCODE = $null
-    dotnet-sonarscanner end
-    Assert-StepExit $endSonar
-    Assert-NoOpenSonarIssue $sonarIssues 'crgolden_Shared' $sonarBranch $sonarStartedAt
+    Invoke-GateStep -Name $endSonar -Needs @($beginSonar, $build, $unitStep) -Always -Body {
+        $global:LASTEXITCODE = $null
+        dotnet-sonarscanner end
+        Assert-StepExit $endSonar
+    }
+    Invoke-GateStep -Name $sonarIssues -Needs @($endSonar) -Always -Body {
+        Assert-NoOpenSonarIssue $sonarIssues 'crgolden_Shared' $sonarBranch $sonarStartedAt
+    }
 }
 
 Write-Row 'Upload test results / pack / push / tag' 'NOT RUN' 'delivery steps, not checks'
