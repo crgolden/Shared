@@ -19,7 +19,7 @@ all three.
 | `GitVersion.yml`, `dotnet-tools.json` | version computation, and the pinned GitVersion, coverlet and ReSharper tools |
 | `.editorconfig`, `stylecop.json`, `Shared.sln.DotSettings` | analyzer severities, StyleCop settings, ReSharper naming abbreviations |
 | `Shared.snk`, `deeprog.png` | strong-name key and package icon |
-| `gate.ps1` | the maintainers' local gate (README.md, "Gate") |
+| `gate.ps1`, `gate.steps.psd1` | the maintainers' local gate: its entry point and its step list (README.md, "Gate") |
 
 ## Invariants
 
